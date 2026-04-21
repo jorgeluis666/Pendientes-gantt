@@ -1,0 +1,56 @@
+Nivel,Tema / Tarea / Subtarea,Comentarios,Responsable,Fecha Inicio,Fecha Límite,Días Restantes
+1,FASE 1: VENTAS Y CONVERSIÓN (Dinero Inmediato),"Foco en cerrar negocios, embudos y flujos de caja.",,,,
+2,Venta a Base de Datos Juan Pablo (Servicio Shopify + Ads),"Necesito: 
+- Ppt. de ventas.
+- Landing Page.
+- Contenidos Carrusel e Imágenes.",Jorge,20/04/2026,27/04/2026,7
+3,Seguimiento de estrategia de Broadcast.,"Medir costos y resultados:
+- Calcular el gasto total y cantidad de broadcast enviados vs las ventas.",Jorge,22/04/2026,29/04/2026,7
+2,Prospección mensajes Linkedin. (Definir plan de contactos).,"Estrategia actual: Mandar mensaje con link para alimentar lista de remarketing.
+Nueva estrategia: Atacar por segmentos basado en gasto previsto en digital.",Jorge,20/04/2026,30/04/2026,10
+2,Venta de Curso Ads Academy ( Va 1 venta).,"- Seguimiento personalizado.
+- Envío de broadcast.
+- Desarrollo de Calculadora para Lima Retail usada por Ads Academy.",Jorge,21/04/2026,5/05/2026,14
+3,Plan de contenido Ads y Reels. (Lima Retail & Ads Academy),"- Utilizar Herramienta SEO para artículos. 
+- Utilizar reportes de Metricool para analizar Redes Sociales.
+- Utilizar herramienta de Score Leads.",Jorge,22/04/2026,6/05/2026,14
+3,Revisión de la página web - Proceso SEO  (Lima Retail & Ads Academy),- Optimizar Página Internas transaccionales en función a su importancia.,Diego,23/04/2026,7/05/2026,14
+3,Creación de nuevos anuncios basado en los nuevos formatos.,- Crear nuevos Carruseles.,Jorge,24/04/2026,8/05/2026,14
+2,Servicio Video Drone,"- Crear nuevos Carruseles.
+- Optimizando página de SEO y la de Drones.",,25/04/2026,10/05/2026,15
+3,Nuevas Página Landing Page - Herramientas IA & Fotos,- Se crearon 04 herramientas y se subió una a la web de Agencia Lima Retail,Jorge,22/04/2026,30/04/2026,8
+2,Servicio Desarrollo de Tableros Looker Studio,"Puede ser un tema incluido en los contactos de Meta o Google Ads.
+- Diego tenia que hacer un tablero DEMO.",Diego,,,
+2,Servicio Auditoria de Implementación de Analytics,Puede ser un tema incluido en los contactos de Meta o Google Ads.,,,,
+1,FASE 2: OPERACIONES Y DATA (Retención y Prospección),Foco en retener clientes e inteligencia de bases de datos.,,,,
+3,Reporte de Anuncios y análisis de diseños - Foco en Diversidad Creativa,"Automatizar el proceso de hacer reporte, que quede parecido al actual.",Diego,5/05/2026,15/05/2026,10
+2,Consolidación de Base Datos Madre,- Construir proceso de captura de Datos Linkedin en base al orden el punto 1.,Jorge,8/05/2026,18/05/2026,10
+3,Enriquecer los datos con ledas de Ads Library google y Meta.,Diego busca en Ads Library empresas que inviertan en el rubro,Diego,10/05/2026,20/05/2026,10
+3,Aterrizar el proceso de investigación y tener claro la fuentes de datos y procesos para obtenerlos,,Diego,11/05/2026,22/05/2026,11
+3,Mejorar plantillas en Looker Studio y crear demos para posibles clientes.,- Aumentar vista de datos directos de WooCommerce y Shopify.,Diego,12/05/2026,25/05/2026,13
+3,Estandarización de los UTM´s,,Diego,15/05/2026,28/05/2026,13
+2,Herramientas IA para productividad:,"- Calculadora de inversión - Hecho
+- Gestión de LEAD WhatsApp - En proceso
+- Análisis de Productos - Hecho
+- Análisis de Clientes - Hecho
+- Google Search Console SEO. - Hecho
+- Ventas por Canal. - Hecho
+- SUNAT cobros. - En Proceso
+- Control de Gasto y retorno de inversión. - (Diego)
+- Control de contratos - Coki",Diego,18/05/2026,30/05/2026,12
+3,Creación de Notebook LM con reporte para que hacer consultas.,Armar un xls con las herramientas de los clientes.,Diego,20/05/2026,31/05/2026,11
+1,FASE 3: SOPORTE Y LARGO PLAZO (Delegar / Posponer),"Contenidos, artículos y tareas internas de baja prioridad.",,,,
+3,Crear documento con reglas para presentación,,Jorge,01/06/2026,15/06/2026,14
+3,"PDF ""Servicio de Nacionalizacion de facturas""",,Jorge,,,0
+3,"PDF ""Google Ads: Guía de implementación estratégica""","En proceso, reunión BNI.",Jorge,2/06/2026,16/06/2026,14
+3,"PDF ""Cómo gestionamos tu inversión""",Terminado.,Jorge,3/06/2026,17/06/2026,14
+3,"PDF ""Taberos de Control de Resultados en Looker Studio""",,Jorge,4/06/2026,18/06/2026,14
+3,Crear Boletín para Linkedin cómo Jorge Luis.,Averiguar si se puede crear Boletín para empresa.,Jorge,5/06/2026,19/06/2026,14
+3,Crear o revisar actualizaciones para el Curso.,Revisar si se puede editar o cambiar video.,Jorge,8/06/2026,22/06/2026,14
+3,Carrusel en Canva para Diferenciales.,Formato terminado.,Jorge,10/06/2026,24/06/2026,14
+3,Meme video (Buscar página para sacar clip de películas),Webs encontradas.,Jorge,12/06/2026,26/06/2026,14
+3,Definir formato de Imagen (Idea: Formatos Nano Banana),,Jorge,15/06/2026,29/06/2026,14
+3,Definir formato para videos tutoriales puntuales.,,Jorge,17/06/2026,1/07/2026,14
+3,Mapear funcionalidades de Supermetrics,Material para artículo.,Diego,20/06/2026,4/07/2026,14
+3,Mapear funcionalidades de Porter,Material para artículo.,Diego,22/06/2026,6/07/2026,14
+3,Mapear funcionalidades de Windsurf,Material para artículo.,Diego,24/06/2026,8/07/2026,14
