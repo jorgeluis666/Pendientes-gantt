@@ -37,6 +37,61 @@
   .legend-row  { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #94A3B8; }
   .legend-dot  { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
 
+  /* ══ KPI como filtros ══ */
+  .kpi-card.filterable {
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s, transform .05s;
+    user-select: none;
+    position: relative;
+  }
+  .kpi-card.filterable:hover { border-color: #CBD5E1; }
+  .kpi-card.filterable:active { transform: scale(.997); }
+  .kpi-card.filterable.active[data-filter-urg="critical"] {
+    border-color: var(--red);
+    box-shadow: inset 0 0 0 1px var(--red);
+  }
+  .kpi-card.filterable.active[data-filter-urg="high"] {
+    border-color: var(--amber);
+    box-shadow: inset 0 0 0 1px var(--amber);
+  }
+  .kpi-card.filterable.active::after {
+    content: '✕';
+    position: absolute;
+    top: 10px; right: 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  /* Select embebido que reemplaza el valor de la tarjeta Carga */
+  .kpi-select {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    padding: 0 22px 0 0;
+    margin: 0;
+    cursor: pointer;
+    width: 100%;
+    max-width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B5CF6' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right center;
+    outline: none;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .kpi-select:focus { outline: none; }
+  .kpi-select option {
+    background: #fff;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
   /* ══ Timeline (Gantt) ══ */
   .gantt { display: flex; flex-direction: column; gap: 28px; }
 
@@ -453,13 +508,13 @@
           <div class="kpi-val blue" id="kTotal">—</div>
           <div class="kpi-sub" id="kTotalSub">— subtareas</div>
         </div>
-        <div class="kpi-card">
+        <div class="kpi-card filterable" data-filter-urg="critical" id="kpiCrit" title="Click para filtrar por críticas">
           <div class="kpi-icon red"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
           <div class="kpi-lbl">Críticas (≤ 7 días)</div>
           <div class="kpi-val red" id="kCrit">—</div>
           <div class="kpi-sub" id="kCritSub">Requieren atención</div>
         </div>
-        <div class="kpi-card">
+        <div class="kpi-card filterable" data-filter-urg="high" id="kpiHigh" title="Click para filtrar por alta prioridad">
           <div class="kpi-icon amber"><svg viewBox="0 0 24 24"><path d="M12 2l10 18H2z"></path><line x1="12" y1="10" x2="12" y2="14"></line></svg></div>
           <div class="kpi-lbl">Alta prioridad</div>
           <div class="kpi-val amber" id="kHigh">—</div>
@@ -467,8 +522,10 @@
         </div>
         <div class="kpi-card">
           <div class="kpi-icon purple"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
-          <div class="kpi-lbl">Carga por responsable</div>
-          <div class="kpi-val purple" id="kResp">—</div>
+          <div class="kpi-lbl">Filtrar por responsable</div>
+          <select class="kpi-val purple kpi-select" id="kRespSelect">
+            <option value="">Todos</option>
+          </select>
           <div class="kpi-sub" id="kRespSub">—</div>
         </div>
       </div>
@@ -623,26 +680,44 @@ function renderAll() {
 function renderKPIs(tasks) {
   const total   = tasks.length;
   const lvl3    = tasks.filter(t => t.nivel === 3).length;
-  const crit    = tasks.filter(t => urgClass(t.dias) === 'critical').length;
-  const high    = tasks.filter(t => urgClass(t.dias) === 'high').length;
 
-  const byResp = {};
-  tasks.forEach(t => {
-    const r = t.resp || '—';
-    byResp[r] = (byResp[r] || 0) + 1;
+  // Críticas y Alta: SIEMPRE se calculan sobre el dataset completo (ignorando el filtro
+  // de urgencia) para que los contadores no colapsen cuando la misma tarjeta está activa.
+  const baseForUrg = DATA.rows.filter(t => {
+    if (t.nivel === 1) return false;
+    if (FILTERS.resp && t.resp !== FILTERS.resp) return false;
+    if (FILTERS.lvl  && String(t.nivel) !== FILTERS.lvl) return false;
+    return true;
   });
-  const topResp = Object.entries(byResp).sort((a,b) => b[1] - a[1])[0];
+  const crit = baseForUrg.filter(t => urgClass(t.dias) === 'critical').length;
+  const high = baseForUrg.filter(t => urgClass(t.dias) === 'high').length;
 
   document.getElementById('kTotal').textContent = total;
   document.getElementById('kTotalSub').textContent = lvl3 + ' subtareas · ' + (total - lvl3) + ' tareas';
   document.getElementById('kCrit').textContent = crit;
   document.getElementById('kCritSub').textContent = crit ? 'Cerrar antes de 7 días' : 'Sin urgencias críticas';
   document.getElementById('kHigh').textContent = high;
-  document.getElementById('kHighSub').textContent = 'Entre 8 y 14 días';
-  document.getElementById('kResp').textContent = topResp ? topResp[0] : '—';
-  document.getElementById('kRespSub').textContent = topResp
-    ? topResp[1] + ' tareas · ' + Object.keys(byResp).length + ' responsables'
-    : 'Sin asignar';
+  document.getElementById('kHighSub').textContent = high ? 'Entre 8 y 14 días' : 'Sin alta prioridad';
+
+  // Carga por responsable — el selector ya lleva el valor seleccionado
+  const byResp = {};
+  tasks.forEach(t => {
+    const r = t.resp || '—';
+    byResp[r] = (byResp[r] || 0) + 1;
+  });
+  const nResp = Object.keys(byResp).filter(k => k !== '—').length;
+  const subEl = document.getElementById('kRespSub');
+  if (FILTERS.resp) {
+    subEl.textContent = total + (total === 1 ? ' tarea asignada' : ' tareas asignadas');
+  } else {
+    const topResp = Object.entries(byResp).sort((a,b) => b[1] - a[1])[0];
+    subEl.textContent = topResp
+      ? nResp + (nResp === 1 ? ' responsable · top ' : ' responsables · top ') + topResp[0]
+      : 'Sin asignar';
+  }
+
+  // Estado visual de tarjetas clickeables
+  updateKPIActiveStates();
 
   // Topbar pills
   document.getElementById('pillTotal').textContent = total + ' tareas';
@@ -651,6 +726,12 @@ function renderKPIs(tasks) {
     document.getElementById('pillRange').textContent =
       fmtDate(DATA.minDate) + ' → ' + fmtDate(DATA.maxDate);
   }
+}
+
+function updateKPIActiveStates() {
+  document.querySelectorAll('.kpi-card.filterable').forEach(card => {
+    card.classList.toggle('active', card.dataset.filterUrg === FILTERS.urg && FILTERS.urg !== '');
+  });
 }
 
 /* ═══ Gantt diario ═══
@@ -836,11 +917,16 @@ function loadCSVText(text, sourceName, persist) {
   const minDate = dates.length ? new Date(Math.min(...dates.map(d=>d.getTime()))) : null;
   const maxDate = dates.length ? new Date(Math.max(...dates.map(d=>d.getTime()))) : null;
 
-  // Construimos filtro de responsables
+  // Construimos filtro de responsables (sidebar + KPI select)
   const resps = [...new Set(rows.map(r=>r.resp).filter(Boolean))].sort();
-  const sel = document.getElementById('fResp');
-  sel.innerHTML = '<option value="">Todos</option>' +
+  const respOpts = '<option value="">Todos</option>' +
     resps.map(r => '<option value="' + escapeAttr(r) + '">' + escapeHTML(r) + '</option>').join('');
+  const sel = document.getElementById('fResp');
+  sel.innerHTML = respOpts;
+  sel.value = FILTERS.resp || '';
+  const kSel = document.getElementById('kRespSelect');
+  kSel.innerHTML = respOpts;
+  kSel.value = FILTERS.resp || '';
 
   DATA = { rows, phases, minDate, maxDate };
   if (persist !== false) saveToStorage(text, sourceName);
@@ -894,8 +980,34 @@ dz.addEventListener('drop', e => {
   rd.readAsText(f, 'UTF-8');
 });
 
-document.getElementById('fResp').addEventListener('change', e => { FILTERS.resp = e.target.value; renderAll(); });
-document.getElementById('fUrg').addEventListener('change',  e => { FILTERS.urg  = e.target.value; renderAll(); });
+document.getElementById('fResp').addEventListener('change', e => {
+  FILTERS.resp = e.target.value;
+  document.getElementById('kRespSelect').value = FILTERS.resp;
+  renderAll();
+});
+document.getElementById('fUrg').addEventListener('change',  e => {
+  FILTERS.urg = e.target.value;
+  renderAll();
+});
+
+// Tarjetas KPI clickeables (Críticas / Alta prioridad): toggle de filtro de urgencia
+document.querySelectorAll('.kpi-card.filterable').forEach(card => {
+  card.addEventListener('click', () => {
+    const urg = card.dataset.filterUrg;
+    FILTERS.urg = (FILTERS.urg === urg) ? '' : urg;
+    document.getElementById('fUrg').value = FILTERS.urg;
+    renderAll();
+  });
+});
+
+// Selector de responsable en tarjeta KPI
+document.getElementById('kRespSelect').addEventListener('change', e => {
+  e.stopPropagation();
+  FILTERS.resp = e.target.value;
+  document.getElementById('fResp').value = FILTERS.resp;
+  renderAll();
+});
+document.getElementById('kRespSelect').addEventListener('click', e => e.stopPropagation());
 document.querySelectorAll('.sf-preset[data-lvl]').forEach(b => {
   b.addEventListener('click', () => {
     document.querySelectorAll('.sf-preset[data-lvl]').forEach(x => x.classList.remove('on'));
