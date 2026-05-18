@@ -7,172 +7,214 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#222;--bg4:#2c2c2c;
+  --bg:#0f0f0f;--bg2:#161616;--bg3:#1e1e1e;--bg4:#272727;
   --accent:#ff6b35;--accent2:#ff8d5e;
-  --text:#f0f0f0;--text2:#aaa;--text3:#555;
-  --border:#2e2e2e;--border2:#404040;
+  --text:#f0f0f0;--text2:#9a9a9a;--text3:#4a4a4a;
+  --border:#252525;--border2:#363636;
   --success:#4caf50;--warning:#ff9800;--danger:#f44336;--info:#2196f3;
   --r:8px;--rl:12px;
 }
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh}
 
 /* ─── HEADER ─── */
-header{position:sticky;top:0;z-index:100;background:rgba(15,15,15,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:10px}
-.brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
-.brand h1{font-size:17px;font-weight:700;white-space:nowrap}
-.brand-badge{font-size:11px;color:var(--text3);background:var(--bg3);padding:2px 8px;border-radius:20px;border:1px solid var(--border);white-space:nowrap}
-.hdr-actions{display:flex;gap:6px;flex-shrink:0}
+header{position:sticky;top:0;z-index:100;background:rgba(15,15,15,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;flex:1}
+.brand h1{font-size:16px;font-weight:700}
+.brand-badge{font-size:11px;color:var(--text3);background:var(--bg3);padding:2px 9px;border-radius:20px;border:1px solid var(--border)}
+.hdr-actions{display:flex;gap:6px}
 
 /* ─── BUTTONS ─── */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap;line-height:1}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border:none;border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:500;transition:all .15s;white-space:nowrap;line-height:1}
 .btn:active{transform:scale(.97)}
 .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
-.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--bg4);border-color:var(--border2)}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border2)}.btn-secondary:hover{background:var(--bg4)}
 .btn-ghost{background:transparent;color:var(--text2);border:1px solid transparent}.btn-ghost:hover{background:var(--bg3);color:var(--text)}
-.btn-danger-ghost{background:transparent;color:var(--danger);border:1px solid transparent}.btn-danger-ghost:hover{background:rgba(244,67,54,.1)}
-.btn-sm{padding:6px 11px;font-size:12px}
-.btn-icon{padding:6px;background:transparent;border:none;border-radius:var(--r);cursor:pointer;color:var(--text2);font-size:14px;transition:all .15s;line-height:1;display:inline-flex;align-items:center}
-.btn-icon:hover{background:var(--bg3);color:var(--text)}
+.btn-danger-ghost{background:transparent;color:var(--danger)}.btn-danger-ghost:hover{background:rgba(244,67,54,.1)}
+.btn-icon{padding:5px;background:transparent;border:none;border-radius:6px;cursor:pointer;color:var(--text3);transition:all .15s;display:inline-flex;align-items:center;line-height:1}
+.btn-icon:hover{background:var(--bg4);color:var(--text2)}
 .btn-icon.del:hover{background:rgba(244,67,54,.12);color:var(--danger)}
 
 /* ─── STATS ─── */
-.stats{display:flex;gap:10px;padding:14px 20px;overflow-x:auto;scrollbar-width:none}
+.stats{display:flex;gap:8px;padding:14px 24px;overflow-x:auto;scrollbar-width:none}
 .stats::-webkit-scrollbar{display:none}
-.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 15px;min-width:90px;cursor:pointer;transition:all .15s;user-select:none}
-.stat:hover{border-color:var(--border2)}.stat.active{border-color:var(--accent);background:rgba(255,107,53,.07)}
-.stat-val{font-size:22px;font-weight:700;line-height:1}.stat.active .stat-val{color:var(--accent)}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;min-width:86px;cursor:pointer;transition:all .15s;user-select:none;flex-shrink:0}
+.stat:hover{border-color:var(--border2)}.stat.active{border-color:var(--accent);background:rgba(255,107,53,.06)}
+.stat-val{font-size:20px;font-weight:700;line-height:1}.stat.active .stat-val{color:var(--accent)}
 .stat-lbl{font-size:10px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
 
-/* ─── FILTERS ─── */
-.filters{padding:0 20px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.sort-wrap{margin-left:auto;display:flex;align-items:center;gap:6px}
+/* ─── TOOLBAR ─── */
+.toolbar{display:flex;align-items:center;gap:8px;padding:0 24px 12px}
+.toolbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
 .sort-lbl{font-size:11px;color:var(--text3)}
-.sort-sel{background:var(--bg2);border:1px solid var(--border);color:var(--text2);border-radius:var(--r);padding:5px 8px;font-size:12px;cursor:pointer}
+.sort-sel{background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:var(--r);padding:5px 9px;font-size:12px;cursor:pointer}
+.sort-sel:focus{outline:none;border-color:var(--accent)}
 
-/* ─── TASK LIST ─── */
-.task-list{padding:0 20px 100px;display:flex;flex-direction:column;gap:8px}
-.empty{text-align:center;padding:60px 20px;color:var(--text3)}
-.empty-ico{font-size:38px;margin-bottom:12px}.empty p{margin-bottom:16px;font-size:13px}
+/* ─── TABLE WRAP ─── */
+.table-wrap{margin:0 24px 80px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--bg2)}
+.table-scroll{overflow-x:auto}
 
-/* ─── TASK CARD ─── */
-.card{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--border);border-radius:var(--r);padding:13px 15px;transition:border-color .2s;position:relative}
-.card:hover{border-color:var(--border2)}
-.card.s-pendiente{border-left-color:var(--text3)}
-.card.s-en_proceso{border-left-color:var(--info)}
-.card.s-completada{border-left-color:var(--success);opacity:.65}
-.card.s-vencida{border-left-color:var(--danger);animation:pulse-red 2.5s ease-in-out infinite}
-@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(244,67,54,0)}50%{box-shadow:0 0 0 4px rgba(244,67,54,.12)}}
+/* ─── TABLE ─── */
+.task-table{width:100%;border-collapse:collapse;min-width:780px}
+.task-table thead th{background:var(--bg3);padding:9px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border);font-weight:500;text-align:left;white-space:nowrap}
+.task-table thead th.th-right{text-align:right}
+.task-table thead th.th-center{text-align:center}
 
-.card-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px}
-.card-name{font-size:15px;font-weight:600;color:var(--text);flex:1;line-height:1.3;word-break:break-word}
-.s-completada .card-name{text-decoration:line-through;color:var(--text2)}
-.card-actions{display:flex;gap:1px;opacity:0;transition:opacity .15s;flex-shrink:0}
-.card:hover .card-actions{opacity:1}
-.card-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5;word-break:break-word}
-.card-meta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:9px}
-.card-meta-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)}
-.card-foot{display:flex;align-items:center;gap:10px;margin-top:8px}
-.status-sel{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:3px 10px;font-size:12px;cursor:pointer;transition:border-color .15s}
-.status-sel:hover{border-color:var(--border2)}
-.time-rem{margin-left:auto;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.time-rem.ok{color:var(--success)}.time-rem.warn{color:var(--warning)}.time-rem.crit{color:#ff6b00}.time-rem.over{color:var(--danger)}.time-rem.muted{color:var(--text3)}
-.prog-wrap{height:3px;background:var(--bg3);border-radius:2px;margin-top:9px;overflow:hidden}
+/* ─── ROW ─── */
+.trow{border-bottom:1px solid var(--border);transition:background .1s;position:relative}
+.trow:last-child{border-bottom:none}
+.trow:hover{background:rgba(255,255,255,.018)}
+.trow.s-pendiente td:first-child{box-shadow:inset 2px 0 0 var(--text3)}
+.trow.s-en_proceso td:first-child{box-shadow:inset 2px 0 0 var(--info)}
+.trow.s-completada{opacity:.55}.trow.s-completada td:first-child{box-shadow:inset 2px 0 0 var(--success)}
+.trow.s-vencida td:first-child{box-shadow:inset 2px 0 0 var(--danger)}
+.trow.s-vencida{animation:pr 2.5s ease-in-out infinite}
+@keyframes pr{0%,100%{background:transparent}50%{background:rgba(244,67,54,.03)}}
+
+/* ─── CELLS ─── */
+.task-table td{padding:0;vertical-align:middle}
+.td-status{width:140px;padding:10px 12px}
+.td-main{padding:8px 10px 8px 12px}
+.td-dt{width:158px;padding:10px 12px;text-align:right}
+.td-dur{width:110px;padding:10px 12px;text-align:right}
+.td-rem{width:170px;padding:10px 12px;text-align:right}
+.td-del{width:36px;padding:0 8px 0 0;text-align:center}
+
+/* ─── STATUS SELECT ─── */
+.status-wrap{display:flex;align-items:center;gap:7px}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .2s}
+.sdot.s-pendiente{background:var(--text3)}
+.sdot.s-en_proceso{background:var(--info)}
+.sdot.s-completada{background:var(--success)}
+.sdot.s-vencida{background:var(--danger)}
+.status-sel{background:transparent;border:none;font-size:12px;font-weight:500;cursor:pointer;color:var(--text2);padding:0;-webkit-appearance:none;appearance:none;outline:none;width:auto}
+.status-sel:hover{color:var(--text)}
+.s-pendiente .status-sel{color:var(--text3)}
+.s-en_proceso .status-sel{color:var(--info)}
+.s-completada .status-sel{color:var(--success)}
+.s-vencida .status-sel{color:var(--danger)}
+
+/* ─── INLINE INPUTS ─── */
+.cell-name,.cell-desc,.cell-dt,.cell-dur-inp{background:transparent;border:1px solid transparent;color:var(--text);font-family:inherit;border-radius:5px;transition:all .1s;outline:none;display:block;width:100%}
+.cell-name{font-size:13px;font-weight:600;padding:4px 6px;line-height:1.3}
+.cell-desc{font-size:11px;color:var(--text2);padding:3px 6px;margin-top:2px}
+.cell-name:hover,.cell-desc:hover,.cell-dt:hover,.cell-dur-inp:hover{background:var(--bg4);border-color:var(--border)}
+.cell-name:focus,.cell-desc:focus,.cell-dt:focus,.cell-dur-inp:focus{background:var(--bg4);border-color:var(--accent);color:var(--text)}
+.cell-name::placeholder{color:var(--text3);font-weight:400}
+.cell-desc::placeholder{color:var(--text3)}
+.s-completada .cell-name{text-decoration:line-through;opacity:.6}
+
+/* ─── DATE / DURATION ─── */
+.cell-dt{font-size:11px;color:var(--text2);padding:4px 6px;text-align:right;cursor:pointer}
+.cell-dt::-webkit-calendar-picker-indicator{filter:invert(.3);cursor:pointer;opacity:.6}
+.cell-dt:hover::-webkit-calendar-picker-indicator{opacity:1}
+.dur-wrap{display:flex;align-items:center;gap:4px;justify-content:flex-end}
+.cell-dur-inp{font-size:11px;color:var(--text2);padding:4px 6px;text-align:right;width:56px;-moz-appearance:textfield}
+.cell-dur-inp::-webkit-inner-spin-button,.cell-dur-inp::-webkit-outer-spin-button{-webkit-appearance:none}
+.dur-unit{font-size:11px;color:var(--text3);white-space:nowrap}
+
+/* ─── TIME REMAINING ─── */
+.time-rem{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.time-rem.ok{color:var(--success)}.time-rem.warn{color:var(--warning)}.time-rem.crit{color:#ff7b2e}.time-rem.over{color:var(--danger)}.time-rem.muted{color:var(--text3)}
+.prog-wrap{height:2px;background:var(--bg4);border-radius:2px;margin-top:5px;overflow:hidden}
 .prog-bar{height:100%;border-radius:2px;transition:width 1s linear,background .3s}
-.prog-bar.ok{background:var(--success)}.prog-bar.warn{background:var(--warning)}.prog-bar.crit{background:#ff6b00}.prog-bar.over{background:var(--danger)}
+.prog-bar.ok{background:var(--success)}.prog-bar.warn{background:var(--warning)}.prog-bar.crit{background:#ff7b2e}.prog-bar.over{background:var(--danger)}
+
+/* ─── ADD ROW ─── */
+.add-row-wrap{border-top:1px solid var(--border)}
+.add-row-btn{width:100%;padding:11px 16px;background:transparent;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:7px;transition:all .15s;font-family:inherit}
+.add-row-btn:hover{background:rgba(255,107,53,.04);color:var(--text2)}
+.add-row-btn svg{opacity:.5}
+
+/* ─── EMPTY STATE ─── */
+.empty-cell{padding:0 !important}
+.empty{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty-ico{font-size:32px;margin-bottom:10px}.empty p{font-size:13px;margin-bottom:14px}
 
 /* ─── MODALS ─── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);animation:fadein .15s ease}
-@keyframes fadein{from{opacity:0}to{opacity:1}}
-@keyframes slideup{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rl);width:100%;max-width:500px;max-height:90vh;overflow-y:auto;animation:slideup .2s ease}
-.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 13px;border-bottom:1px solid var(--border)}
-.modal-hdr h2{font-size:15px;font-weight:600}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);animation:fi .15s ease}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+@keyframes su{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rl);width:100%;max-width:500px;max-height:90vh;overflow-y:auto;animation:su .2s ease}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:15px 20px 12px;border-bottom:1px solid var(--border)}
+.modal-hdr h2{font-size:14px;font-weight:600}
 .modal-body{padding:20px}
-.modal-ftr{display:flex;gap:10px;justify-content:flex-end;padding:13px 20px;border-top:1px solid var(--border)}
-
-/* ─── FORM ─── */
-.fg{margin-bottom:15px}
-.flbl{display:block;font-size:11px;font-weight:500;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
-.finp,.ftxt,.fsel{width:100%;background:var(--bg2);border:1px solid var(--border2);color:var(--text);border-radius:var(--r);padding:9px 11px;font-size:14px;transition:border-color .15s}
+.modal-ftr{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px;border-top:1px solid var(--border)}
+.fg{margin-bottom:14px}
+.flbl{display:block;font-size:10px;font-weight:500;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.finp,.ftxt,.fsel{width:100%;background:var(--bg2);border:1px solid var(--border2);color:var(--text);border-radius:var(--r);padding:8px 11px;font-size:13px;transition:border-color .15s;font-family:inherit}
 .finp:focus,.ftxt:focus,.fsel:focus{outline:none;border-color:var(--accent)}
-.ftxt{resize:vertical;min-height:68px;line-height:1.5;font-family:inherit}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.fhint{font-size:11px;color:var(--text3);margin-top:4px;min-height:16px}
-input[type=datetime-local]::-webkit-calendar-picker-indicator{filter:invert(.5)}
+.ftxt{resize:vertical;min-height:68px;line-height:1.5}
 
-/* ─── IMPORT ─── */
-.itabs{display:flex;gap:2px;background:var(--bg2);border-radius:var(--r);padding:3px;margin-bottom:18px}
+/* ─── IMPORT TABS ─── */
+.itabs{display:flex;gap:2px;background:var(--bg2);border-radius:var(--r);padding:3px;margin-bottom:16px}
 .itab{flex:1;padding:7px;text-align:center;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text2);transition:all .15s}
 .itab.active{background:var(--bg4);color:var(--text)}
 .ipanel{display:none}.ipanel.active{display:block}
-.drop-zone{border:2px dashed var(--border2);border-radius:var(--r);padding:28px;text-align:center;cursor:pointer;transition:all .15s;color:var(--text2)}
-.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);color:var(--text);background:rgba(255,107,53,.05)}
-.drop-zone input{display:none}.drop-ico{font-size:26px;margin-bottom:8px}
-.ibox{background:var(--bg2);border-radius:var(--r);padding:13px;font-size:12px;color:var(--text2);line-height:1.75;margin-top:12px}
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--r);padding:26px;text-align:center;cursor:pointer;transition:all .15s;color:var(--text2)}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);color:var(--text);background:rgba(255,107,53,.04)}
+.drop-zone input{display:none}.drop-ico{font-size:24px;margin-bottom:7px}
+.ibox{background:var(--bg2);border-radius:var(--r);padding:12px;font-size:12px;color:var(--text2);line-height:1.75;margin-top:11px}
 .ibox strong{color:var(--text)}
 .ibox code{background:var(--bg4);padding:1px 5px;border-radius:3px;color:var(--accent2);font-family:monospace;font-size:11px}
-.ireplace{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding-top:14px;margin-top:14px;border-top:1px solid var(--border)}
+.ireplace{display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;padding-top:12px;margin-top:12px;border-top:1px solid var(--border);color:var(--text2)}
 .ireplace input{accent-color:var(--accent)}
 
 /* ─── SHARE ─── */
 .share-row{display:flex;gap:8px;margin:12px 0}
-.share-inp{flex:1;background:var(--bg2);border:1px solid var(--border2);color:var(--text2);border-radius:var(--r);padding:9px 11px;font-size:12px;font-family:monospace;overflow:hidden;text-overflow:ellipsis}
+.share-inp{flex:1;background:var(--bg2);border:1px solid var(--border2);color:var(--text2);border-radius:var(--r);padding:8px 11px;font-size:11px;font-family:monospace;overflow:hidden;text-overflow:ellipsis}
 .copy-msg{font-size:12px;color:var(--success);text-align:center;height:16px}
 
-/* ─── ALERT MODAL ─── */
-.alert-modal{background:var(--bg3);border:1px solid var(--danger);border-radius:var(--rl);width:100%;max-width:440px;animation:slideup .2s ease;box-shadow:0 0 40px rgba(244,67,54,.2)}
-.alert-hdr{padding:20px;text-align:center;border-bottom:1px solid var(--border)}
-.alert-ico{font-size:34px;display:block;margin-bottom:8px;animation:ring .6s ease-in-out infinite alternate}
-@keyframes ring{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
-.alert-hdr h2{font-size:17px;font-weight:700;color:var(--danger)}
-.alert-hdr p{font-size:13px;color:var(--text2);margin-top:5px}
-.alert-list{padding:14px 18px;display:flex;flex-direction:column;gap:9px}
-.alert-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 13px}
-.alert-item-name{font-weight:600;font-size:14px;margin-bottom:3px}
-.alert-item-msg{font-size:12px}
-.alert-item-msg.t15{color:var(--warning)}.alert-item-msg.t5{color:#ff6b00}.alert-item-msg.t0{color:var(--danger)}
-.alert-ftr{padding:13px 18px;border-top:1px solid var(--border);display:flex;justify-content:center}
+/* ─── ALERT ─── */
+.alert-modal{background:var(--bg3);border:1px solid var(--danger);border-radius:var(--rl);width:100%;max-width:420px;animation:su .2s ease;box-shadow:0 0 40px rgba(244,67,54,.18)}
+.alert-hdr{padding:18px;text-align:center;border-bottom:1px solid var(--border)}
+.alert-ico{font-size:30px;display:block;margin-bottom:7px;animation:rg .6s ease-in-out infinite alternate}
+@keyframes rg{from{transform:rotate(-10deg)}to{transform:rotate(10deg)}}
+.alert-hdr h2{font-size:16px;font-weight:700;color:var(--danger)}
+.alert-hdr p{font-size:12px;color:var(--text2);margin-top:4px}
+.alert-list{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.alert-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.alert-item-name{font-weight:600;font-size:13px;margin-bottom:3px}
+.alert-item-msg{font-size:11px}
+.alert-item-msg.t15{color:var(--warning)}.alert-item-msg.t5{color:#ff7b2e}.alert-item-msg.t0{color:var(--danger)}
+.alert-ftr{padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:center}
 
 /* ─── TOAST ─── */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);border:1px solid var(--border2);padding:9px 20px;border-radius:30px;font-size:13px;z-index:1000;transition:transform .25s ease;white-space:nowrap;pointer-events:none}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);border:1px solid var(--border2);padding:8px 18px;border-radius:30px;font-size:12px;z-index:1000;transition:transform .25s ease;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
 /* ─── RESPONSIVE ─── */
-@media(max-width:580px){
-  header{padding:9px 13px}
-  .brand h1{font-size:15px}.brand-badge{display:none}
-  .btn-sm{padding:6px 9px;font-size:11px}
-  .stats{padding:12px 13px}.task-list{padding:0 13px 80px}
-  .filters{padding:0 13px 10px}.frow{grid-template-columns:1fr}
-  .overlay{padding:12px}
+@media(max-width:640px){
+  header{padding:9px 14px}.hdr-actions .btn-secondary{display:none}
+  .stats{padding:10px 14px}.toolbar{padding:0 14px 10px}
+  .table-wrap{margin:0 14px 80px}
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════ HEADER ══════════ -->
+<!-- ══ HEADER ══ -->
 <header>
   <div class="brand">
     <h1>Checklist</h1>
     <span class="brand-badge" id="task-count-badge">0 tareas</span>
   </div>
   <div class="hdr-actions">
-    <button class="btn btn-secondary btn-sm" onclick="openImportModal()">
+    <button class="btn btn-secondary" onclick="openImportModal()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Importar
     </button>
-    <button class="btn btn-secondary btn-sm" onclick="openShareModal()">
+    <button class="btn btn-secondary" onclick="openShareModal()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
       Compartir
     </button>
-    <button class="btn btn-primary btn-sm" onclick="openAddModal()">
+    <button class="btn btn-primary" onclick="addTask()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Nueva Tarea
     </button>
   </div>
 </header>
 
-<!-- ══════════ STATS ══════════ -->
+<!-- ══ STATS ══ -->
 <div class="stats">
   <div class="stat active" id="stat-all" onclick="setFilter(null)">
     <div class="stat-val" id="sv-total">0</div><div class="stat-lbl">Total</div>
@@ -191,12 +233,12 @@ input[type=datetime-local]::-webkit-calendar-picker-indicator{filter:invert(.5)}
   </div>
 </div>
 
-<!-- ══════════ FILTERS ══════════ -->
-<div class="filters">
-  <div class="sort-wrap">
+<!-- ══ TOOLBAR ══ -->
+<div class="toolbar">
+  <div class="toolbar-right">
     <span class="sort-lbl">Ordenar:</span>
     <select class="sort-sel" id="sort-sel" onchange="activeSort=this.value;renderTasks()">
-      <option value="time">Por tiempo</option>
+      <option value="time">Por tiempo restante</option>
       <option value="status">Por estado</option>
       <option value="name">Por nombre</option>
       <option value="created">Por creación</option>
@@ -204,58 +246,37 @@ input[type=datetime-local]::-webkit-calendar-picker-indicator{filter:invert(.5)}
   </div>
 </div>
 
-<!-- ══════════ TASK LIST ══════════ -->
-<div class="task-list" id="task-list"></div>
-
-<!-- ══════════ TASK MODAL ══════════ -->
-<div id="task-modal" class="overlay" style="display:none" onclick="overlayClick(event,'task-modal')">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-hdr">
-      <h2 id="modal-title">Nueva Tarea</h2>
-      <button class="btn-icon" onclick="closeModal('task-modal')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="modal-body">
-      <div class="fg">
-        <label class="flbl">Nombre de la tarea *</label>
-        <input type="text" id="f-name" class="finp" placeholder="¿Qué hay que hacer?" autocomplete="off">
-      </div>
-      <div class="fg">
-        <label class="flbl">Descripción</label>
-        <textarea id="f-desc" class="ftxt" placeholder="Detalles opcionales…"></textarea>
-      </div>
-      <div class="frow">
-        <div class="fg">
-          <label class="flbl">Inicio</label>
-          <input type="datetime-local" id="f-start" class="finp">
-        </div>
-        <div class="fg">
-          <label class="flbl">Duración (minutos)</label>
-          <input type="number" id="f-duration" class="finp" placeholder="ej. 60" min="1">
-          <div class="fhint" id="f-dur-hint"></div>
-        </div>
-      </div>
-      <div class="fg">
-        <label class="flbl">Estado</label>
-        <select id="f-status" class="fsel">
-          <option value="pendiente">⚪ Pendiente</option>
-          <option value="en_proceso">🔵 En Proceso</option>
-          <option value="completada">🟢 Completada</option>
-        </select>
-      </div>
-    </div>
-    <div class="modal-ftr">
-      <button class="btn btn-ghost" onclick="closeModal('task-modal')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveTask()">Guardar</button>
-    </div>
+<!-- ══ TABLE ══ -->
+<div class="table-wrap">
+  <div class="table-scroll">
+    <table class="task-table">
+      <thead>
+        <tr>
+          <th style="padding-left:16px">Estado</th>
+          <th>Tarea / Descripción</th>
+          <th class="th-right">Inicio</th>
+          <th class="th-right">Duración</th>
+          <th class="th-right">Tiempo restante</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="add-row-wrap">
+    <button class="add-row-btn" onclick="addTask()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Agregar tarea
+    </button>
   </div>
 </div>
 
-<!-- ══════════ IMPORT MODAL ══════════ -->
+<!-- ══ IMPORT MODAL ══ -->
 <div id="import-modal" class="overlay" style="display:none" onclick="overlayClick(event,'import-modal')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-hdr">
       <h2>Importar Tareas</h2>
-      <button class="btn-icon" onclick="closeModal('import-modal')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="btn-icon" onclick="closeModal('import-modal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
       <div class="itabs">
@@ -263,91 +284,81 @@ input[type=datetime-local]::-webkit-calendar-picker-indicator{filter:invert(.5)}
         <div class="itab" onclick="switchTab(1)">🔗 Google Sheets</div>
         <div class="itab" onclick="switchTab(2)">📋 Pegar CSV</div>
       </div>
-
       <div class="ipanel active" id="ip-0">
         <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-inp').click()">
           <input type="file" id="file-inp" accept=".csv,.xlsx,.xls" onchange="handleFile(this)">
           <div class="drop-ico">📂</div>
-          <div style="font-weight:600;margin-bottom:4px">Arrastra aquí o haz clic</div>
-          <div style="font-size:12px;color:var(--text3)">CSV · XLSX · XLS</div>
+          <div style="font-weight:600;margin-bottom:4px;font-size:13px">Arrastra aquí o haz clic</div>
+          <div style="font-size:11px;color:var(--text3)">CSV · XLSX · XLS</div>
         </div>
         <div class="ibox">
-          <strong>Columnas reconocidas (cualquier orden):</strong><br>
-          <code>nombre</code> &nbsp;·&nbsp; <code>descripcion</code> &nbsp;·&nbsp; <code>inicio</code> &nbsp;·&nbsp; <code>duracion</code> &nbsp;·&nbsp; <code>estado</code>
+          <strong>Columnas reconocidas:</strong><br>
+          <code>nombre</code> · <code>descripcion</code> · <code>inicio</code> · <code>duracion</code> · <code>estado</code>
         </div>
       </div>
-
       <div class="ipanel" id="ip-1">
         <div class="fg">
           <label class="flbl">URL del Google Sheets</label>
           <input type="url" id="sheets-url" class="finp" placeholder="https://docs.google.com/spreadsheets/d/…">
         </div>
         <div class="ibox">
-          <strong>Pasos para publicar tu hoja:</strong><br>
-          1. Abre el Google Sheets<br>
-          2. <strong>Archivo → Compartir → Publicar en la web</strong><br>
-          3. Elige <strong>Valores separados por comas (.csv)</strong><br>
-          4. Copia el enlace y pégalo arriba<br><br>
-          También funciona el enlace de exportación directa:<br>
+          <strong>Pasos:</strong><br>
+          1. <strong>Archivo → Compartir → Publicar en la web</strong><br>
+          2. Elige <strong>CSV</strong> y copia el enlace<br><br>
           <code>…/export?format=csv&amp;gid=0</code>
         </div>
         <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="importSheets()">Importar desde Sheets</button>
       </div>
-
       <div class="ipanel" id="ip-2">
         <div class="fg">
-          <label class="flbl">Pega tu CSV aquí</label>
-          <textarea id="csv-txt" class="ftxt" style="min-height:130px;font-family:monospace;font-size:12px" placeholder="nombre,descripcion,inicio,duracion,estado&#10;Reunión equipo,Ver avances,2026-05-17T10:00,60,pendiente"></textarea>
+          <label class="flbl">Pega tu CSV</label>
+          <textarea id="csv-txt" class="ftxt" style="min-height:120px;font-family:monospace;font-size:11px" placeholder="nombre,descripcion,inicio,duracion,estado&#10;Reunión,Ver avances,2026-05-17T10:00,60,pendiente"></textarea>
         </div>
-        <button class="btn btn-primary" style="width:100%" onclick="importCSVText()">Importar CSV</button>
+        <button class="btn btn-primary" style="width:100%" onclick="importCSVText()">Importar</button>
       </div>
-
       <label class="ireplace">
         <input type="checkbox" id="imp-replace">
-        Reemplazar lista completa (por defecto, se agregan las tareas a la lista actual)
+        Reemplazar lista completa
       </label>
     </div>
   </div>
 </div>
 
-<!-- ══════════ SHARE MODAL ══════════ -->
+<!-- ══ SHARE MODAL ══ -->
 <div id="share-modal" class="overlay" style="display:none" onclick="overlayClick(event,'share-modal')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-hdr">
       <h2>Compartir Checklist</h2>
-      <button class="btn-icon" onclick="closeModal('share-modal')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="btn-icon" onclick="closeModal('share-modal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
-      <p style="color:var(--text2);font-size:13px;margin-bottom:14px">
-        Cualquier persona con este enlace puede ver y editar la lista. El estado actual queda codificado en la URL.
-      </p>
+      <p style="color:var(--text2);font-size:12px;margin-bottom:14px">Cualquier persona con este enlace puede ver y editar la lista.</p>
       <div class="share-row">
         <input type="text" id="share-url" class="share-inp" readonly>
         <button class="btn btn-primary" onclick="copyURL()">Copiar</button>
       </div>
       <div class="copy-msg" id="copy-msg"></div>
-      <div class="ibox" style="margin-top:14px">
+      <div class="ibox" style="margin-top:12px">
         <strong>Cómo funciona:</strong><br>
-        · La URL incluye todas las tareas actuales codificadas<br>
-        · Al abrir el enlace, se ofrece cargar la lista compartida<br>
-        · Cada persona puede editar y re-compartir su versión actualizada<br>
-        · Para sincronización de equipo, usa la importación desde Google Sheets
+        · La URL incluye todas las tareas codificadas<br>
+        · Al abrir el enlace, se ofrece cargar la lista<br>
+        · Cada persona puede editar y re-compartir su versión
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════ ALERT MODAL ══════════ -->
+<!-- ══ ALERT MODAL ══ -->
 <div id="alert-modal" class="overlay" style="display:none">
   <div class="alert-modal" onclick="event.stopPropagation()">
     <div class="alert-hdr">
       <span class="alert-ico">⏰</span>
       <h2>Alerta de Tiempo</h2>
-      <p>Las siguientes tareas requieren tu atención</p>
+      <p>Tareas que requieren tu atención</p>
     </div>
     <div class="alert-list" id="alert-list"></div>
     <div class="alert-ftr">
-      <button class="btn btn-danger-ghost" style="padding:9px 30px" onclick="closeModal('alert-modal')">Entendido</button>
+      <button class="btn btn-danger-ghost" style="padding:8px 28px" onclick="closeModal('alert-modal')">Entendido</button>
     </div>
   </div>
 </div>
@@ -359,11 +370,10 @@ input[type=datetime-local]::-webkit-calendar-picker-indicator{filter:invert(.5)}
 <script>
 // ══ STATE ══
 let tasks = [];
-let editingId = null;
 let activeFilter = null;
 let activeSort = 'time';
 let notifOK = false;
-const SK = 'lr_checklist_v2';
+const SK = 'lr_checklist_v3';
 
 // ══ INIT ══
 document.addEventListener('DOMContentLoaded', () => {
@@ -371,18 +381,13 @@ document.addEventListener('DOMContentLoaded', () => {
   checkURLImport();
   askNotifPermission();
   setupDropZone();
-  document.getElementById('f-duration').addEventListener('input', updateDurHint);
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      ['task-modal','import-modal','share-modal','alert-modal'].forEach(closeModal);
-    }
+    if (e.key === 'Escape') ['import-modal','share-modal','alert-modal'].forEach(closeModal);
     if (e.key === 'n' && !e.ctrlKey && !e.metaKey && !e.altKey &&
-        e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
-      openAddModal();
-    }
+        e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') addTask();
   });
+  setInterval(() => { updateTimeCells(); updateStats(); }, 1000);
   setInterval(checkAlerts, 30000);
-  setInterval(renderTasks, 1000);
   checkAlerts();
   renderTasks();
 });
@@ -390,45 +395,34 @@ document.addEventListener('DOMContentLoaded', () => {
 // ══ STORAGE ══
 function saveTasks() { localStorage.setItem(SK, JSON.stringify(tasks)); }
 function loadTasks() {
-  try {
-    const raw = localStorage.getItem(SK);
-    tasks = raw ? JSON.parse(raw).map(norm) : [];
-  } catch { tasks = []; }
+  try { tasks = (JSON.parse(localStorage.getItem(SK)) || []).map(norm); } catch { tasks = []; }
 }
 function norm(t) {
   return {
-    id: t.id || uid(),
-    name: t.name || 'Sin nombre',
+    id: t.id || uid(), name: t.name || '',
     description: t.description || '',
     startDateTime: t.startDateTime || '',
     durationMinutes: Number(t.durationMinutes) || 0,
     status: ['pendiente','en_proceso','completada'].includes(t.status) ? t.status : 'pendiente',
-    alertsShown: t.alertsShown || { 15: false, 5: false, 0: false },
+    alertsShown: t.alertsShown || { 15:false, 5:false, 0:false },
     createdAt: t.createdAt || new Date().toISOString()
   };
 }
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
 // ══ ENCODE / DECODE ══
-function encode(data) {
-  try { return btoa(unescape(encodeURIComponent(JSON.stringify(data)))); } catch { return ''; }
-}
-function decode(s) {
-  try { return JSON.parse(decodeURIComponent(escape(atob(s)))); } catch { return null; }
-}
+function encode(d) { try { return btoa(unescape(encodeURIComponent(JSON.stringify(d)))); } catch { return ''; } }
+function decode(s) { try { return JSON.parse(decodeURIComponent(escape(atob(s)))); } catch { return null; } }
 
 // ══ URL IMPORT ══
 function checkURLImport() {
-  const p = new URLSearchParams(window.location.search);
-  const d = p.get('d');
+  const d = new URLSearchParams(window.location.search).get('d');
   if (!d) return;
   window.history.replaceState({}, '', window.location.pathname);
-  const imported = decode(d);
-  if (!Array.isArray(imported) || imported.length === 0) return;
-  if (confirm(`Se recibió una lista compartida con ${imported.length} tarea(s).\n¿Deseas cargarla? (se reemplazará tu lista actual)`)) {
-    tasks = imported.map(norm);
-    saveTasks();
-    toast(`✓ ${imported.length} tareas importadas`);
+  const imp = decode(d);
+  if (Array.isArray(imp) && imp.length > 0 &&
+      confirm(`Se recibió una lista compartida con ${imp.length} tarea(s).\n¿Cargarla? (reemplazará la lista actual)`)) {
+    tasks = imp.map(norm); saveTasks(); toast(`✓ ${imp.length} tareas importadas`);
   }
 }
 
@@ -436,213 +430,237 @@ function checkURLImport() {
 function askNotifPermission() {
   if (!('Notification' in window)) return;
   if (Notification.permission === 'granted') { notifOK = true; return; }
-  if (Notification.permission !== 'denied') {
-    Notification.requestPermission().then(p => { notifOK = p === 'granted'; });
-  }
-}
-function sendNotif(title, body) {
-  if (!notifOK) return;
-  try { new Notification(title, { body, tag: 'lr-cl' }); } catch {}
+  if (Notification.permission !== 'denied') Notification.requestPermission().then(p => { notifOK = p === 'granted'; });
 }
 
 // ══ TIME ══
 function getTimes(task) {
-  if (!task.startDateTime || !task.durationMinutes) {
-    return { progress: 0, remainingMs: null, isOverdue: false, isStarted: false, totalMs: 0, start: 0, end: 0 };
-  }
-  const now = Date.now();
-  const start = new Date(task.startDateTime).getTime();
-  const totalMs = task.durationMinutes * 60000;
-  const end = start + totalMs;
-  const remainingMs = end - now;
-  const elapsedMs = now - start;
-  const progress = Math.min(100, Math.max(0, (elapsedMs / totalMs) * 100));
-  return { start, end, totalMs, remainingMs, elapsedMs, progress, isStarted: now >= start, isOverdue: remainingMs < 0 };
+  if (!task.startDateTime || !task.durationMinutes)
+    return { progress:0, remainingMs:null, isOverdue:false, isStarted:false, totalMs:0, start:0, end:0 };
+  const now = Date.now(), start = new Date(task.startDateTime).getTime();
+  const totalMs = task.durationMinutes * 60000, end = start + totalMs;
+  const remainingMs = end - now, elapsedMs = now - start;
+  return { start, end, totalMs, remainingMs, elapsedMs,
+    progress: Math.min(100, Math.max(0, (elapsedMs / totalMs) * 100)),
+    isStarted: now >= start, isOverdue: remainingMs < 0 };
 }
-
 function fmtMs(ms) {
-  const a = Math.abs(ms);
-  const h = Math.floor(a / 3600000);
-  const m = Math.floor((a % 3600000) / 60000);
-  const s = Math.floor((a % 60000) / 1000);
-  if (h > 0) return `${h}h ${m}m`;
-  if (m > 0) return `${m}m ${s}s`;
-  return `${s}s`;
+  const a = Math.abs(ms), h = Math.floor(a/3600000), m = Math.floor((a%3600000)/60000), s = Math.floor((a%60000)/1000);
+  return h > 0 ? `${h}h ${m}m` : m > 0 ? `${m}m ${s}s` : `${s}s`;
 }
-
 function timeClass(task) {
   if (task.status === 'completada') return 'muted';
   const { remainingMs, isOverdue, isStarted } = getTimes(task);
   if (remainingMs === null || !isStarted) return 'muted';
   if (isOverdue) return 'over';
-  if (remainingMs < 5 * 60000) return 'crit';
-  if (remainingMs < 15 * 60000) return 'warn';
+  if (remainingMs < 5*60000) return 'crit';
+  if (remainingMs < 15*60000) return 'warn';
   return 'ok';
+}
+function getTimeText(task) {
+  const t = getTimes(task);
+  if (task.status === 'completada') return '✓ Completada';
+  if (t.remainingMs === null) return '—';
+  if (!t.isStarted) return `Inicia en ${fmtMs(t.start - Date.now())}`;
+  if (t.isOverdue) return `Venció hace ${fmtMs(t.remainingMs)}`;
+  return `${fmtMs(t.remainingMs)} restantes`;
 }
 
 // ══ ALERTS ══
 function checkAlerts() {
   const alerts = [];
   tasks.forEach(task => {
-    if (task.status === 'completada') return;
-    if (!task.startDateTime || !task.durationMinutes) return;
-    const { remainingMs } = getTimes(task);
-    if (remainingMs === null) return;
+    if (task.status === 'completada' || !task.startDateTime || !task.durationMinutes) return;
+    const { remainingMs } = getTimes(task); if (remainingMs === null) return;
     const rem = remainingMs / 60000;
-    if (!task.alertsShown) task.alertsShown = { 15: false, 5: false, 0: false };
-    if (rem <= 15 && rem > 5 && !task.alertsShown[15]) {
-      alerts.push({ task, type: 15, msg: 'Faltan 15 minutos' });
-      task.alertsShown[15] = true;
-    }
-    if (rem <= 5 && rem > 0 && !task.alertsShown[5]) {
-      alerts.push({ task, type: 5, msg: '¡Solo faltan 5 minutos!' });
-      task.alertsShown[5] = true;
-    }
-    if (rem <= 0 && !task.alertsShown[0]) {
-      alerts.push({ task, type: 0, msg: '¡La tarea ha vencido!' });
-      task.alertsShown[0] = true;
+    if (!task.alertsShown) task.alertsShown = { 15:false, 5:false, 0:false };
+    if (rem <= 15 && rem > 5 && !task.alertsShown[15]) { alerts.push({task,type:15,msg:'Faltan 15 minutos'}); task.alertsShown[15]=true; }
+    if (rem <= 5 && rem > 0 && !task.alertsShown[5]) { alerts.push({task,type:5,msg:'¡Solo faltan 5 minutos!'}); task.alertsShown[5]=true; }
+    if (rem <= 0 && !task.alertsShown[0]) { alerts.push({task,type:0,msg:'¡La tarea ha vencido!'}); task.alertsShown[0]=true; }
+  });
+  if (!alerts.length) return;
+  saveTasks();
+  document.getElementById('alert-list').innerHTML = alerts.map(({task,type,msg}) =>
+    `<div class="alert-item"><div class="alert-item-name">${esc(task.name||'Sin nombre')}</div><div class="alert-item-msg t${type}">${msg}</div></div>`
+  ).join('');
+  openModal('alert-modal');
+  alerts.forEach(({task,msg}) => { if (notifOK) try { new Notification(`⏰ ${msg}`, {body:task.name,tag:'lr-cl'}); } catch {} });
+}
+
+// ══ EFFICIENT TIME UPDATE (every second) ══
+function updateTimeCells() {
+  tasks.forEach(task => {
+    const remEl = document.getElementById(`rem-${task.id}`);
+    const barEl = document.getElementById(`bar-${task.id}`);
+    if (!remEl) return;
+    const tc = timeClass(task);
+    remEl.className = `time-rem ${tc}`;
+    remEl.textContent = getTimeText(task);
+    if (barEl && task.durationMinutes > 0) {
+      const t = getTimes(task);
+      barEl.style.width = `${Math.round(t.progress || 0)}%`;
+      barEl.className = `prog-bar ${tc}`;
     }
   });
-  if (alerts.length === 0) return;
-  saveTasks();
-  const list = document.getElementById('alert-list');
-  list.innerHTML = alerts.map(({ task, type, msg }) => `
-    <div class="alert-item">
-      <div class="alert-item-name">${esc(task.name)}</div>
-      <div class="alert-item-msg t${type}">${msg}</div>
-    </div>`).join('');
-  openModal('alert-modal');
-  alerts.forEach(({ msg, task }) => sendNotif(`⏰ ${msg}`, task.name));
 }
 
 // ══ RENDER ══
 function renderTasks() {
   let list = [...tasks];
-
   if (activeFilter === 'vencida') {
     list = list.filter(t => t.status !== 'completada' && getTimes(t).isOverdue);
   } else if (activeFilter) {
     list = list.filter(t => t.status === activeFilter);
   }
-
   if (activeSort === 'time') {
-    list.sort((a, b) => {
-      const ra = getTimes(a).remainingMs;
-      const rb = getTimes(b).remainingMs;
-      if (ra === null && rb === null) return 0;
-      if (ra === null) return 1; if (rb === null) return -1;
-      return ra - rb;
-    });
+    list.sort((a,b) => { const ra=getTimes(a).remainingMs, rb=getTimes(b).remainingMs;
+      if (ra===null&&rb===null) return 0; if (ra===null) return 1; if (rb===null) return -1; return ra-rb; });
   } else if (activeSort === 'name') {
-    list.sort((a, b) => a.name.localeCompare(b.name, 'es'));
+    list.sort((a,b) => a.name.localeCompare(b.name,'es'));
   } else if (activeSort === 'status') {
-    const o = { en_proceso: 0, pendiente: 1, completada: 2 };
-    list.sort((a, b) => (o[a.status] ?? 1) - (o[b.status] ?? 1));
+    const o={en_proceso:0,pendiente:1,completada:2};
+    list.sort((a,b) => (o[a.status]??1)-(o[b.status]??1));
   } else {
-    list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    list.sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt));
   }
-
-  const el = document.getElementById('task-list');
-  if (list.length === 0) {
-    el.innerHTML = `<div class="empty"><div class="empty-ico">📋</div>
-      <p>${activeFilter ? 'No hay tareas con este filtro.' : 'Aún no tienes tareas.'}</p>
-      ${!activeFilter ? `<button class="btn btn-primary" onclick="openAddModal()">+ Agregar primera tarea</button>` : ''}
-    </div>`;
-  } else {
-    el.innerHTML = list.map(renderCard).join('');
-  }
-
-  // Stats
-  let total=0, pendiente=0, en_proceso=0, completada=0, vencida=0;
-  tasks.forEach(t => {
-    total++;
-    if (t.status === 'completada') completada++;
-    else {
-      if (t.status === 'pendiente') pendiente++;
-      if (t.status === 'en_proceso') en_proceso++;
-      if (getTimes(t).isOverdue) vencida++;
-    }
-  });
-  document.getElementById('sv-total').textContent = total;
-  document.getElementById('sv-pendiente').textContent = pendiente;
-  document.getElementById('sv-en_proceso').textContent = en_proceso;
-  document.getElementById('sv-completada').textContent = completada;
-  document.getElementById('sv-vencida').textContent = vencida;
-  document.getElementById('task-count-badge').textContent = `${total} tarea${total !== 1 ? 's' : ''}`;
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = list.length === 0
+    ? `<tr><td colspan="6" class="empty-cell"><div class="empty"><div class="empty-ico">📋</div>
+        <p>${activeFilter ? 'No hay tareas con este filtro.' : 'Aún no tienes tareas.'}</p>
+        ${!activeFilter ? `<button class="btn btn-primary" style="font-size:12px" onclick="addTask()">+ Agregar primera tarea</button>` : ''}
+       </div></td></tr>`
+    : list.map(renderRow).join('');
+  updateStats();
+  const n = tasks.length;
+  document.getElementById('task-count-badge').textContent = `${n} tarea${n!==1?'s':''}`;
 }
 
-function renderCard(task) {
-  const t = getTimes(task);
-  const isOver = task.status !== 'completada' && t.isOverdue;
+function renderRow(task) {
+  const times = getTimes(task);
+  const isOver = task.status !== 'completada' && times.isOverdue;
   const cls = isOver ? 'vencida' : task.status;
   const tc = timeClass(task);
+  const prog = task.status === 'completada' ? 100 : Math.round(times.progress || 0);
+  const durHint = task.durationMinutes >= 60
+    ? `${Math.floor(task.durationMinutes/60)}h${task.durationMinutes%60?' '+(task.durationMinutes%60)+'m':''}` : '';
 
-  let timeText = '';
-  if (task.status === 'completada') {
-    timeText = '✓ Completada';
-  } else if (t.remainingMs === null) {
-    timeText = 'Sin tiempo configurado';
-  } else if (!t.isStarted) {
-    timeText = `Inicia en ${fmtMs(t.start - Date.now())}`;
-  } else if (isOver) {
-    timeText = `Venció hace ${fmtMs(t.remainingMs)}`;
-  } else {
-    timeText = `${fmtMs(t.remainingMs)} restantes`;
-  }
-
-  const startFmt = task.startDateTime
-    ? new Date(task.startDateTime).toLocaleString('es-PE', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
-    : '';
-  const durFmt = task.durationMinutes > 0
-    ? (task.durationMinutes >= 60
-        ? `${Math.floor(task.durationMinutes/60)}h${task.durationMinutes % 60 ? ' '+(task.durationMinutes%60)+'m' : ''}`
-        : `${task.durationMinutes}m`)
-    : '';
-  const prog = task.status === 'completada' ? 100 : Math.round(t.progress || 0);
-
-  return `<div class="card s-${cls}" id="c-${task.id}">
-    <div class="card-top">
-      <div class="card-name">${esc(task.name)}</div>
-      <div class="card-actions">
-        <button class="btn-icon" title="Editar" onclick="openEditModal('${task.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-        <button class="btn-icon del" title="Eliminar" onclick="delTask('${task.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        </button>
+  return `<tr class="trow s-${cls}" data-id="${task.id}">
+    <td class="td-status">
+      <div class="status-wrap">
+        <span class="sdot s-${cls}"></span>
+        <select class="status-sel" onchange="setStatus('${task.id}',this.value)">
+          <option value="pendiente" ${task.status==='pendiente'?'selected':''}>Pendiente</option>
+          <option value="en_proceso" ${task.status==='en_proceso'?'selected':''}>En Proceso</option>
+          <option value="completada" ${task.status==='completada'?'selected':''}>Completada</option>
+        </select>
       </div>
-    </div>
-    ${task.description ? `<div class="card-desc">${esc(task.description)}</div>` : ''}
-    <div class="card-meta">
-      ${startFmt ? `<span class="card-meta-item">📅 ${startFmt}</span>` : ''}
-      ${durFmt ? `<span class="card-meta-item">⏱️ ${durFmt}</span>` : ''}
-    </div>
-    <div class="card-foot">
-      <select class="status-sel" onchange="setStatus('${task.id}',this.value)">
-        <option value="pendiente" ${task.status==='pendiente'?'selected':''}>⚪ Pendiente</option>
-        <option value="en_proceso" ${task.status==='en_proceso'?'selected':''}>🔵 En Proceso</option>
-        <option value="completada" ${task.status==='completada'?'selected':''}>🟢 Completada</option>
-      </select>
-      <div class="time-rem ${tc}">${timeText}</div>
-    </div>
-    ${task.durationMinutes > 0 ? `<div class="prog-wrap"><div class="prog-bar ${tc}" style="width:${prog}%"></div></div>` : ''}
-  </div>`;
+    </td>
+    <td class="td-main">
+      <input id="name-${task.id}" class="cell-name" type="text"
+             value="${esc(task.name)}" placeholder="Nombre de la tarea"
+             ${task.status==='completada'?'style="text-decoration:line-through;opacity:.55"':''}
+             onblur="saveField('${task.id}','name',this.value)"
+             onkeydown="if(event.key==='Enter'){this.blur();document.getElementById('desc-${task.id}').focus();}">
+      <input id="desc-${task.id}" class="cell-desc" type="text"
+             value="${esc(task.description)}" placeholder="Descripción opcional…"
+             onblur="saveField('${task.id}','description',this.value)"
+             onkeydown="if(event.key==='Enter'){this.blur();}">
+    </td>
+    <td class="td-dt">
+      <input id="dt-${task.id}" class="cell-dt" type="datetime-local"
+             value="${task.startDateTime}"
+             onchange="saveFieldDirect('${task.id}','startDateTime',this.value)">
+    </td>
+    <td class="td-dur">
+      <div class="dur-wrap">
+        <input id="dur-${task.id}" class="cell-dur-inp" type="number" min="1"
+               value="${task.durationMinutes||''}" placeholder="—"
+               title="${durHint}"
+               onblur="saveFieldDirect('${task.id}','durationMinutes',parseInt(this.value)||0)"
+               onkeydown="if(event.key==='Enter'){this.blur();}">
+        <span class="dur-unit">${durHint || 'min'}</span>
+      </div>
+    </td>
+    <td class="td-rem">
+      <div id="rem-${task.id}" class="time-rem ${tc}">${getTimeText(task)}</div>
+      <div class="prog-wrap"><div id="bar-${task.id}" class="prog-bar ${tc}" style="width:${task.durationMinutes>0?prog:0}%"></div></div>
+    </td>
+    <td class="td-del">
+      <button class="btn-icon del" onclick="delTask('${task.id}')" title="Eliminar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+    </td>
+  </tr>`;
+}
+
+function updateStats() {
+  let t=0,p=0,e=0,c=0,v=0;
+  tasks.forEach(tk => {
+    t++;
+    if (tk.status==='completada') c++;
+    else { if (tk.status==='pendiente') p++; if (tk.status==='en_proceso') e++; if (getTimes(tk).isOverdue) v++; }
+  });
+  document.getElementById('sv-total').textContent=t;
+  document.getElementById('sv-pendiente').textContent=p;
+  document.getElementById('sv-en_proceso').textContent=e;
+  document.getElementById('sv-completada').textContent=c;
+  document.getElementById('sv-vencida').textContent=v;
 }
 
 // ══ FILTER ══
 function setFilter(f) {
   activeFilter = f;
-  const map = { null:'stat-all', pendiente:'stat-pendiente', en_proceso:'stat-en_proceso', completada:'stat-completada', vencida:'stat-vencida' };
+  const map = {'null':'stat-all',pendiente:'stat-pendiente',en_proceso:'stat-en_proceso',completada:'stat-completada',vencida:'stat-vencida'};
   document.querySelectorAll('.stat').forEach(el => el.classList.remove('active'));
-  document.getElementById(map[String(f)] || 'stat-all')?.classList.add('active');
+  document.getElementById(map[String(f)]||'stat-all')?.classList.add('active');
   renderTasks();
 }
 
-// ══ TASK CRUD ══
+// ══ TASK OPS ══
+function addTask() {
+  const task = norm({ id: uid(), name: '', durationMinutes: 60 });
+  const d = new Date(); d.setMinutes(d.getMinutes()+15,0,0);
+  task.startDateTime = dtLocal(d);
+  tasks.unshift(task);
+  saveTasks(); renderTasks();
+  const inp = document.getElementById(`name-${task.id}`);
+  if (inp) { inp.focus(); inp.select(); }
+}
+
 function setStatus(id, status) {
   const t = tasks.find(t => t.id === id);
-  if (t) { t.status = status; saveTasks(); }
+  if (!t) return;
+  t.status = status; saveTasks(); renderTasks();
 }
+
+function saveField(id, field, value) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+  const val = field === 'durationMinutes' ? (parseInt(value)||0) : (value||'').trim();
+  if (field === 'name' && !val) { const inp = document.getElementById(`name-${id}`); if (inp) inp.value = task.name; return; }
+  if (task[field] !== val) { task[field] = val; saveTasks(); }
+  // Refresh duration hint without full re-render
+  if (field === 'durationMinutes') {
+    const durEl = document.getElementById(`dur-${id}`);
+    const row = durEl?.closest('tr');
+    if (row) { const unit = row.querySelector('.dur-unit'); if (unit) { const m=parseInt(val)||0; unit.textContent = m>=60 ? `${Math.floor(m/60)}h${m%60?' '+(m%60)+'m':''}` : 'min'; } }
+    task.alertsShown = {15:false,5:false,0:false}; saveTasks();
+  }
+}
+
+function saveFieldDirect(id, field, value) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+  const val = field === 'durationMinutes' ? (parseInt(value)||0) : value;
+  task[field] = val;
+  task.alertsShown = {15:false,5:false,0:false};
+  saveTasks();
+  if (field === 'durationMinutes') {
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    if (row) { const unit = row.querySelector('.dur-unit'); if (unit) { const m=parseInt(val)||0; unit.textContent = m>=60 ? `${Math.floor(m/60)}h${m%60?' '+(m%60)+'m':''}` : 'min'; } }
+  }
+}
+
 function delTask(id) {
   if (!confirm('¿Eliminar esta tarea?')) return;
   tasks = tasks.filter(t => t.id !== id);
@@ -650,179 +668,87 @@ function delTask(id) {
 }
 
 // ══ MODALS ══
-function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+function openModal(id) { document.getElementById(id).style.display='flex'; document.body.style.overflow='hidden'; }
 function closeModal(id) {
-  const el = document.getElementById(id);
-  if (!el || el.style.display === 'none') return;
-  el.style.display = 'none'; document.body.style.overflow = '';
-  if (id === 'task-modal') { editingId = null; resetForm(); }
+  const el = document.getElementById(id); if (!el||el.style.display==='none') return;
+  el.style.display='none'; document.body.style.overflow='';
 }
-function overlayClick(e, id) { if (e.target === e.currentTarget) closeModal(id); }
-
-function openAddModal() {
-  editingId = null;
-  document.getElementById('modal-title').textContent = 'Nueva Tarea';
-  resetForm();
-  const d = new Date(); d.setMinutes(d.getMinutes() + 15, 0, 0);
-  document.getElementById('f-start').value = dtLocal(d);
-  document.getElementById('f-duration').value = '60';
-  updateDurHint();
-  openModal('task-modal');
-  setTimeout(() => document.getElementById('f-name').focus(), 80);
-}
-function openEditModal(id) {
-  editingId = id;
-  const t = tasks.find(t => t.id === id);
-  if (!t) return;
-  document.getElementById('modal-title').textContent = 'Editar Tarea';
-  document.getElementById('f-name').value = t.name;
-  document.getElementById('f-desc').value = t.description;
-  document.getElementById('f-start').value = t.startDateTime;
-  document.getElementById('f-duration').value = t.durationMinutes || '';
-  document.getElementById('f-status').value = t.status;
-  updateDurHint();
-  openModal('task-modal');
-  setTimeout(() => document.getElementById('f-name').focus(), 80);
-}
-function resetForm() {
-  ['f-name','f-desc','f-start','f-duration'].forEach(id => { document.getElementById(id).value = ''; });
-  document.getElementById('f-status').value = 'pendiente';
-  document.getElementById('f-dur-hint').textContent = '';
-}
-function saveTask() {
-  const name = document.getElementById('f-name').value.trim();
-  if (!name) { document.getElementById('f-name').focus(); toast('El nombre es obligatorio'); return; }
-  const data = {
-    name,
-    description: document.getElementById('f-desc').value.trim(),
-    startDateTime: document.getElementById('f-start').value,
-    durationMinutes: parseInt(document.getElementById('f-duration').value) || 0,
-    status: document.getElementById('f-status').value,
-  };
-  if (editingId) {
-    const t = tasks.find(t => t.id === editingId);
-    if (t) { Object.assign(t, data); t.alertsShown = { 15: false, 5: false, 0: false }; }
-    toast('Tarea actualizada');
-  } else {
-    tasks.push(norm({ ...data, id: uid() }));
-    toast('Tarea creada');
-  }
-  saveTasks(); closeModal('task-modal'); renderTasks();
-}
-function updateDurHint() {
-  const m = parseInt(document.getElementById('f-duration').value) || 0;
-  const el = document.getElementById('f-dur-hint');
-  el.textContent = m >= 60 ? `${Math.floor(m/60)}h${m%60 ? ' '+(m%60)+'m' : ''}` : '';
-}
+function overlayClick(e,id) { if (e.target===e.currentTarget) closeModal(id); }
 
 // ══ IMPORT ══
 function openImportModal() { openModal('import-modal'); }
 function switchTab(i) {
-  document.querySelectorAll('.itab').forEach((t, j) => t.classList.toggle('active', i===j));
-  document.querySelectorAll('.ipanel').forEach((p, j) => p.classList.toggle('active', i===j));
+  document.querySelectorAll('.itab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  document.querySelectorAll('.ipanel').forEach((p,j)=>p.classList.toggle('active',i===j));
 }
 function setupDropZone() {
   const z = document.getElementById('drop-zone');
-  z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('drag-over'); });
-  z.addEventListener('dragleave', () => z.classList.remove('drag-over'));
-  z.addEventListener('drop', e => { e.preventDefault(); z.classList.remove('drag-over'); const f = e.dataTransfer.files[0]; if (f) processFile(f); });
+  z.addEventListener('dragover', e=>{e.preventDefault();z.classList.add('drag-over');});
+  z.addEventListener('dragleave', ()=>z.classList.remove('drag-over'));
+  z.addEventListener('drop', e=>{e.preventDefault();z.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)processFile(f);});
 }
 function handleFile(inp) { if (inp.files[0]) processFile(inp.files[0]); }
 function processFile(file) {
   const ext = file.name.split('.').pop().toLowerCase();
-  if (ext === 'csv') {
-    const r = new FileReader(); r.onload = e => applyImport(parseCSV(e.target.result)); r.readAsText(file, 'UTF-8');
-  } else if (['xlsx','xls'].includes(ext)) {
-    const r = new FileReader(); r.onload = e => applyImport(parseXLSX(e.target.result)); r.readAsArrayBuffer(file);
-  } else { alert('Formato no soportado. Usa CSV, XLSX o XLS.'); }
+  if (ext==='csv') { const r=new FileReader(); r.onload=e=>applyImport(parseCSV(e.target.result)); r.readAsText(file,'UTF-8'); }
+  else if (['xlsx','xls'].includes(ext)) { const r=new FileReader(); r.onload=e=>applyImport(parseXLSX(e.target.result)); r.readAsArrayBuffer(file); }
+  else alert('Formato no soportado. Usa CSV, XLSX o XLS.');
 }
 function parseCSV(text) {
-  const res = Papa.parse(text, { header:true, skipEmptyLines:true, transformHeader: h => h.trim().toLowerCase() });
+  const res = Papa.parse(text,{header:true,skipEmptyLines:true,transformHeader:h=>h.trim().toLowerCase()});
   return mapRows(res.data);
 }
 function parseXLSX(buf) {
-  const wb = XLSX.read(buf, { type:'array' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rows = XLSX.utils.sheet_to_json(ws, { raw:false });
-  return mapRows(rows.map(row => { const o={}; Object.keys(row).forEach(k=>{o[k.trim().toLowerCase()]=row[k];}); return o; }));
+  const wb=XLSX.read(buf,{type:'array'}), ws=wb.Sheets[wb.SheetNames[0]];
+  return mapRows(XLSX.utils.sheet_to_json(ws,{raw:false}).map(row=>{const o={};Object.keys(row).forEach(k=>{o[k.trim().toLowerCase()]=row[k];});return o;}));
 }
 function mapRows(rows) {
-  const g = (row, ...keys) => { for (const k of keys) { const v=row[k]; if (v !== undefined && v !== '') return v; } return ''; };
-  return rows.map(row => {
-    const name = g(row, 'nombre','name','tarea','task','titulo','title');
-    if (!name) return null;
-    const startRaw = g(row, 'inicio','fecha_inicio','fecha inicio','start','fecha','datetime');
-    let startDateTime = '';
-    if (startRaw) { const d = new Date(startRaw); if (!isNaN(d.getTime())) startDateTime = dtLocal(d); }
-    const stRaw = (g(row,'estado','status','estatus') + '').toLowerCase();
-    let status = 'pendiente';
-    if (/proces|progress|activ/.test(stRaw)) status = 'en_proceso';
-    else if (/complet|done|finish|termin/.test(stRaw)) status = 'completada';
-    return norm({
-      name: String(name),
-      description: String(g(row,'descripcion','descripción','description','desc','detalle','comentario') || ''),
-      startDateTime,
-      durationMinutes: parseInt(g(row,'duracion','duración','duration','minutos','minutes','mins','min')) || 60,
-      status,
-    });
+  const g=(row,...keys)=>{for(const k of keys){const v=row[k];if(v!==undefined&&v!=='')return v;}return '';};
+  return rows.map(row=>{
+    const name=g(row,'nombre','name','tarea','task','titulo','title'); if(!name) return null;
+    const startRaw=g(row,'inicio','fecha_inicio','fecha inicio','start','fecha','datetime');
+    let startDateTime=''; if(startRaw){const d=new Date(startRaw);if(!isNaN(d.getTime()))startDateTime=dtLocal(d);}
+    const stRaw=(g(row,'estado','status','estatus')+'').toLowerCase();
+    let status='pendiente';
+    if(/proces|progress|activ/.test(stRaw)) status='en_proceso';
+    else if(/complet|done|finish|termin/.test(stRaw)) status='completada';
+    return norm({name:String(name),description:String(g(row,'descripcion','descripción','description','desc','detalle','comentario')||''),
+      startDateTime,durationMinutes:parseInt(g(row,'duracion','duración','duration','minutos','minutes','mins','min'))||60,status});
   }).filter(Boolean);
 }
-function importCSVText() {
-  const txt = document.getElementById('csv-txt').value.trim();
-  if (!txt) { toast('Pega tu CSV primero'); return; }
-  applyImport(parseCSV(txt));
-}
+function importCSVText() { const t=document.getElementById('csv-txt').value.trim(); if(!t){toast('Pega tu CSV primero');return;} applyImport(parseCSV(t)); }
 async function importSheets() {
-  let url = document.getElementById('sheets-url').value.trim();
-  if (!url) { toast('Ingresa la URL primero'); return; }
-  url = url.replace(/\/edit[^?]*(\?.*)?$/, '/export?format=csv')
-           .replace(/\/pub[^?]*(\?.*)?$/, '/export?format=csv');
-  if (!url.includes('format=csv')) url += (url.includes('?') ? '&' : '?') + 'format=csv';
-  try {
-    toast('Importando…');
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    applyImport(parseCSV(await res.text()));
-  } catch(e) {
-    alert(`No se pudo importar: ${e.message}\n\nAsegúrate de que la hoja esté publicada públicamente como CSV.`);
-  }
+  let url=document.getElementById('sheets-url').value.trim(); if(!url){toast('Ingresa la URL primero');return;}
+  url=url.replace(/\/edit[^?]*(\?.*)?$/,'/export?format=csv').replace(/\/pub[^?]*(\?.*)?$/,'/export?format=csv');
+  if(!url.includes('format=csv')) url+=(url.includes('?')?'&':'?')+'format=csv';
+  try { toast('Importando…'); const res=await fetch(url); if(!res.ok) throw new Error(`HTTP ${res.status}`); applyImport(parseCSV(await res.text())); }
+  catch(e) { alert(`No se pudo importar: ${e.message}\n\nAsegúrate de que la hoja esté publicada públicamente como CSV.`); }
 }
 function applyImport(rows) {
-  if (!rows || rows.length === 0) { toast('No se encontraron tareas válidas'); return; }
-  const replace = document.getElementById('imp-replace').checked;
-  tasks = replace ? rows : [...tasks, ...rows];
+  if(!rows||rows.length===0){toast('No se encontraron tareas válidas');return;}
+  tasks = document.getElementById('imp-replace').checked ? rows : [...tasks,...rows];
   saveTasks(); closeModal('import-modal'); renderTasks();
-  toast(`✓ ${rows.length} tarea${rows.length !== 1 ? 's' : ''} importada${rows.length !== 1 ? 's' : ''}`);
+  toast(`✓ ${rows.length} tarea${rows.length!==1?'s':''} importada${rows.length!==1?'s':''}`);
 }
 
 // ══ SHARE ══
 function openShareModal() {
-  const base = window.location.href.split('?')[0];
-  document.getElementById('share-url').value = `${base}?d=${encode(tasks)}`;
+  document.getElementById('share-url').value = `${window.location.href.split('?')[0]}?d=${encode(tasks)}`;
   document.getElementById('copy-msg').textContent = '';
   openModal('share-modal');
 }
 function copyURL() {
-  const inp = document.getElementById('share-url');
-  navigator.clipboard.writeText(inp.value).then(() => {
-    document.getElementById('copy-msg').textContent = '✓ URL copiada al portapapeles';
-    setTimeout(() => { document.getElementById('copy-msg').textContent = ''; }, 3000);
-  }).catch(() => { inp.select(); document.execCommand('copy'); });
+  const inp=document.getElementById('share-url');
+  navigator.clipboard.writeText(inp.value).then(()=>{
+    document.getElementById('copy-msg').textContent='✓ URL copiada al portapapeles';
+    setTimeout(()=>{document.getElementById('copy-msg').textContent='';},3000);
+  }).catch(()=>{inp.select();document.execCommand('copy');});
 }
 
 // ══ UTILS ══
-function dtLocal(d) {
-  const p = n => String(n).padStart(2,'0');
-  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
-}
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2600);
-}
+function dtLocal(d) { const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg) { const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2600); }
 </script>
 </body>
 </html>
