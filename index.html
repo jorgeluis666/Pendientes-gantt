@@ -104,21 +104,26 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdr
 .s-completada .cell-name{text-decoration:line-through;opacity:.6}
 
 /* ─── DATE / DURATION ─── */
-.cell-dt{font-size:11px;color:var(--text2);padding:4px 6px;text-align:right;cursor:pointer}
+.cell-dt{font-size:13px;color:var(--text2);padding:4px 6px;text-align:right;cursor:pointer}
 .cell-dt::-webkit-calendar-picker-indicator{filter:none;cursor:pointer;opacity:.4}
 .cell-dt:hover::-webkit-calendar-picker-indicator{opacity:1}
 .dur-wrap{display:flex;align-items:center;gap:4px;justify-content:flex-end}
-.cell-dur-inp{font-size:11px;color:var(--text2);padding:4px 6px;text-align:right;width:56px;-moz-appearance:textfield}
+.cell-dur-inp{font-size:13px;color:var(--text2);padding:4px 6px;text-align:right;width:56px;-moz-appearance:textfield}
 .cell-dur-inp::-webkit-inner-spin-button,.cell-dur-inp::-webkit-outer-spin-button{-webkit-appearance:none}
-.dur-unit{font-size:11px;color:var(--text3);white-space:nowrap}
+.dur-unit{font-size:13px;color:var(--text3);white-space:nowrap}
 
 /* ─── TIME REMAINING ─── */
-.time-rem{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.time-rem{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .time-rem.ok{color:var(--success)}.time-rem.warn{color:var(--warning)}.time-rem.crit{color:#ff7b2e}.time-rem.over{color:var(--danger)}.time-rem.muted{color:var(--text3)}
 .prog-wrap{height:2px;background:var(--bg4);border-radius:2px;margin-top:5px;overflow:hidden}
 .prog-bar{height:100%;border-radius:2px;transition:width 1s linear,background .3s}
 .prog-bar.ok{background:var(--success)}.prog-bar.warn{background:var(--warning)}.prog-bar.crit{background:#ff7b2e}.prog-bar.over{background:var(--danger)}
 
+/* ─── PLAY BUTTON ─── */
+.td-play{width:46px;padding:0 6px 0 2px;text-align:center;vertical-align:middle}
+.play-btn{width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.play-btn.start{background:rgba(22,163,74,.1);color:var(--success)}.play-btn.start:hover{background:rgba(22,163,74,.22);transform:scale(1.08)}
+.play-btn.stop{background:rgba(255,107,53,.1);color:var(--accent)}.play-btn.stop:hover{background:rgba(255,107,53,.22);transform:scale(1.08)}
 /* ─── ADD ROW ─── */
 .add-row-wrap{border-top:1px solid var(--border)}
 .add-row-btn{width:100%;padding:11px 16px;background:transparent;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:7px;transition:all .15s;font-family:inherit}
@@ -273,6 +278,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdr
           <th class="th-right">Inicio</th>
           <th class="th-right">Duración</th>
           <th class="th-right">Tiempo restante</th>
+          <th></th>
           <th></th>
         </tr>
       </thead>
@@ -629,6 +635,17 @@ function renderRow(task) {
       <div id="rem-${task.id}" class="time-rem ${tc}">${getTimeText(task)}</div>
       <div class="prog-wrap"><div id="bar-${task.id}" class="prog-bar ${tc}" style="width:${task.durationMinutes>0?prog:0}%"></div></div>
     </td>
+    <td class="td-play">
+      ${task.status === 'completada' ? '' :
+        task.status === 'en_proceso'
+          ? `<button class="play-btn stop" onclick="stopTask('${task.id}')" title="Marcar como completada">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><rect width="10" height="10" rx="2"/></svg>
+             </button>`
+          : `<button class="play-btn start" onclick="startTask('${task.id}')" title="Iniciar tarea ahora">
+              <svg width="11" height="13" viewBox="0 0 11 13" fill="currentColor"><path d="M0 0L11 6.5L0 13Z"/></svg>
+             </button>`
+      }
+    </td>
     <td class="td-del">
       <button class="btn-icon del" onclick="delTask('${task.id}')" title="Eliminar">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
@@ -703,6 +720,24 @@ function saveFieldDirect(id, field, value) {
     const row = document.querySelector(`tr[data-id="${id}"]`);
     if (row) { const unit = row.querySelector('.dur-unit'); if (unit) { const m=parseInt(val)||0; unit.textContent = m>=60 ? `${Math.floor(m/60)}h${m%60?' '+(m%60)+'m':''}` : 'min'; } }
   }
+}
+
+function startTask(id) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+  task.startDateTime = dtLocal(new Date());
+  task.status = 'en_proceso';
+  task.alertsShown = { 15: false, 5: false, 0: false };
+  saveTasks(); renderTasks();
+  toast('▶ Tarea iniciada');
+}
+
+function stopTask(id) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+  task.status = 'completada';
+  saveTasks(); renderTasks();
+  toast('✓ Tarea completada');
 }
 
 function delTask(id) {
