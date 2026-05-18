@@ -1,1032 +1,828 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Panel de Pendientes · Lima Retail</title>
-<link rel="stylesheet" href="lima-retail-ds.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist · Lima Retail</title>
 <style>
-  /* ═══ Ajustes específicos del Panel ═══ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#222;--bg4:#2c2c2c;
+  --accent:#ff6b35;--accent2:#ff8d5e;
+  --text:#f0f0f0;--text2:#aaa;--text3:#555;
+  --border:#2e2e2e;--border2:#404040;
+  --success:#4caf50;--warning:#ff9800;--danger:#f44336;--info:#2196f3;
+  --r:8px;--rl:12px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh}
 
-  /* Dropzone CSV */
-  .drop-zone {
-    border: 2px dashed rgba(255,255,255,.15);
-    border-radius: var(--r-lg);
-    padding: 22px 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color .15s, background .15s;
-    margin: 0 14px;
-  }
-  .drop-zone:hover,
-  .drop-zone.drag { border-color: var(--brand); background: rgba(37,99,235,.08); }
-  .drop-zone svg  { width: 28px; height: 28px; stroke: #64748B; stroke-width: 1.5; fill: none; margin-bottom: 8px; }
-  .drop-zone-lbl  { font-size: 12px; color: #94A3B8; font-weight: 500; }
-  .drop-zone-hint { font-size: 11px; color: #475569; margin-top: 4px; }
-  .drop-zone input[type=file] { display: none; }
+/* ─── HEADER ─── */
+header{position:sticky;top:0;z-index:100;background:rgba(15,15,15,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.brand h1{font-size:17px;font-weight:700;white-space:nowrap}
+.brand-badge{font-size:11px;color:var(--text3);background:var(--bg3);padding:2px 8px;border-radius:20px;border:1px solid var(--border);white-space:nowrap}
+.hdr-actions{display:flex;gap:6px;flex-shrink:0}
 
-  /* Opciones legibles dentro de selects sobre fondo oscuro */
-  .sf-input option,
-  .sf-input optgroup {
-    background: #1E293B;
-    color: #fff;
-  }
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap;line-height:1}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--bg4);border-color:var(--border2)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid transparent}.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+.btn-danger-ghost{background:transparent;color:var(--danger);border:1px solid transparent}.btn-danger-ghost:hover{background:rgba(244,67,54,.1)}
+.btn-sm{padding:6px 11px;font-size:12px}
+.btn-icon{padding:6px;background:transparent;border:none;border-radius:var(--r);cursor:pointer;color:var(--text2);font-size:14px;transition:all .15s;line-height:1;display:inline-flex;align-items:center}
+.btn-icon:hover{background:var(--bg3);color:var(--text)}
+.btn-icon.del:hover{background:rgba(244,67,54,.12);color:var(--danger)}
 
-  /* Leyenda sidebar */
-  .legend-list { padding: 4px 22px 10px; display: flex; flex-direction: column; gap: 6px; }
-  .legend-row  { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #94A3B8; }
-  .legend-dot  { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+/* ─── STATS ─── */
+.stats{display:flex;gap:10px;padding:14px 20px;overflow-x:auto;scrollbar-width:none}
+.stats::-webkit-scrollbar{display:none}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 15px;min-width:90px;cursor:pointer;transition:all .15s;user-select:none}
+.stat:hover{border-color:var(--border2)}.stat.active{border-color:var(--accent);background:rgba(255,107,53,.07)}
+.stat-val{font-size:22px;font-weight:700;line-height:1}.stat.active .stat-val{color:var(--accent)}
+.stat-lbl{font-size:10px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
 
-  /* ══ KPI como filtros ══ */
-  .kpi-card.filterable {
-    cursor: pointer;
-    transition: border-color .15s, box-shadow .15s, transform .05s;
-    user-select: none;
-    position: relative;
-  }
-  .kpi-card.filterable:hover { border-color: #CBD5E1; }
-  .kpi-card.filterable:active { transform: scale(.997); }
-  .kpi-card.filterable.active[data-filter-urg="critical"] {
-    border-color: var(--red);
-    box-shadow: inset 0 0 0 1px var(--red);
-  }
-  .kpi-card.filterable.active[data-filter-urg="high"] {
-    border-color: var(--amber);
-    box-shadow: inset 0 0 0 1px var(--amber);
-  }
-  .kpi-card.filterable.active::after {
-    content: '✕';
-    position: absolute;
-    top: 10px; right: 14px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
-  }
+/* ─── FILTERS ─── */
+.filters{padding:0 20px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sort-wrap{margin-left:auto;display:flex;align-items:center;gap:6px}
+.sort-lbl{font-size:11px;color:var(--text3)}
+.sort-sel{background:var(--bg2);border:1px solid var(--border);color:var(--text2);border-radius:var(--r);padding:5px 8px;font-size:12px;cursor:pointer}
 
-  /* Select embebido que reemplaza el valor de la tarjeta Carga */
-  .kpi-select {
-    font: inherit;
-    color: inherit;
-    background: transparent;
-    border: none;
-    padding: 0 22px 0 0;
-    margin: 0;
-    cursor: pointer;
-    width: 100%;
-    max-width: 100%;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B5CF6' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right center;
-    outline: none;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-  .kpi-select:focus { outline: none; }
-  .kpi-select option {
-    background: #fff;
-    color: var(--text);
-    font-size: 13px;
-    font-weight: 500;
-  }
+/* ─── TASK LIST ─── */
+.task-list{padding:0 20px 100px;display:flex;flex-direction:column;gap:8px}
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-ico{font-size:38px;margin-bottom:12px}.empty p{margin-bottom:16px;font-size:13px}
 
-  /* ══ Timeline (Gantt) ══ */
-  .gantt { display: flex; flex-direction: column; gap: 28px; }
+/* ─── TASK CARD ─── */
+.card{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--border);border-radius:var(--r);padding:13px 15px;transition:border-color .2s;position:relative}
+.card:hover{border-color:var(--border2)}
+.card.s-pendiente{border-left-color:var(--text3)}
+.card.s-en_proceso{border-left-color:var(--info)}
+.card.s-completada{border-left-color:var(--success);opacity:.65}
+.card.s-vencida{border-left-color:var(--danger);animation:pulse-red 2.5s ease-in-out infinite}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(244,67,54,0)}50%{box-shadow:0 0 0 4px rgba(244,67,54,.12)}}
 
-  .phase-block { }
-  .phase-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 0 0 8px 0;
-    background: transparent;
-    border-left: none;
-    border-bottom: 1px solid var(--border);
-    border-radius: 0;
-    margin-bottom: 4px;
-  }
-  .phase-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-2);
-    letter-spacing: .02em;
-    text-transform: uppercase;
-  }
-  .phase-sub   { font-size: 11px; color: var(--muted); font-weight: 400; display: none; }
-  .phase-meta  { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
-  .phase-meta .count { font-weight: 500; color: var(--text-2); }
+.card-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px}
+.card-name{font-size:15px;font-weight:600;color:var(--text);flex:1;line-height:1.3;word-break:break-word}
+.s-completada .card-name{text-decoration:line-through;color:var(--text2)}
+.card-actions{display:flex;gap:1px;opacity:0;transition:opacity .15s;flex-shrink:0}
+.card:hover .card-actions{opacity:1}
+.card-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5;word-break:break-word}
+.card-meta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:9px}
+.card-meta-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)}
+.card-foot{display:flex;align-items:center;gap:10px;margin-top:8px}
+.status-sel{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:3px 10px;font-size:12px;cursor:pointer;transition:border-color .15s}
+.status-sel:hover{border-color:var(--border2)}
+.time-rem{margin-left:auto;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.time-rem.ok{color:var(--success)}.time-rem.warn{color:var(--warning)}.time-rem.crit{color:#ff6b00}.time-rem.over{color:var(--danger)}.time-rem.muted{color:var(--text3)}
+.prog-wrap{height:3px;background:var(--bg3);border-radius:2px;margin-top:9px;overflow:hidden}
+.prog-bar{height:100%;border-radius:2px;transition:width 1s linear,background .3s}
+.prog-bar.ok{background:var(--success)}.prog-bar.warn{background:var(--warning)}.prog-bar.crit{background:#ff6b00}.prog-bar.over{background:var(--danger)}
 
-  /* Bloque scrollable — minimalista */
-  .gantt-block {
-    overflow-x: auto;
-    border: none;
-    background: transparent;
-    position: relative;
-  }
-  .gantt-block::-webkit-scrollbar { height: 6px; }
-  .gantt-block::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 3px; }
-  .gantt-block::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
-  .gantt-block::-webkit-scrollbar-track { background: transparent; }
+/* ─── MODALS ─── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);animation:fadein .15s ease}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes slideup{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rl);width:100%;max-width:500px;max-height:90vh;overflow-y:auto;animation:slideup .2s ease}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 13px;border-bottom:1px solid var(--border)}
+.modal-hdr h2{font-size:15px;font-weight:600}
+.modal-body{padding:20px}
+.modal-ftr{display:flex;gap:10px;justify-content:flex-end;padding:13px 20px;border-top:1px solid var(--border)}
 
-  /* ── Cabecera de días (única, sin fila de meses) ── */
-  .gantt-days {
-    display: flex;
-    background: #fff;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 4;
-  }
-  .gantt-days .task-col-stub {
-    position: sticky;
-    left: 0;
-    z-index: 5;
-    background: #fff;
-    border-right: 1px solid var(--border);
-  }
-  .gantt-days .day-tick {
-    flex-shrink: 0;
-    padding: 6px 0 5px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-    border-right: none;
-  }
-  .gantt-days .day-tick .wd {
-    font-size: 8px;
-    font-weight: 500;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .05em;
-  }
-  .gantt-days .day-tick .dt {
-    font-size: 10px;
-    color: var(--text-2);
-    font-weight: 400;
-  }
-  .gantt-days .day-tick.weekend .wd,
-  .gantt-days .day-tick.weekend .dt { color: #CBD5E1; }
-  .gantt-days .day-tick.is-today {
-    background: transparent;
-  }
-  .gantt-days .day-tick.is-today .dt {
-    color: var(--red);
-    font-weight: 600;
-  }
-  .gantt-days .day-tick.is-today .wd {
-    color: var(--red);
-  }
-  /* Marca mensual discreta: primer día de mes muestra abreviatura */
-  .gantt-days .day-tick .mon {
-    font-size: 9px;
-    font-weight: 600;
-    color: var(--text-2);
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    margin-top: 1px;
-  }
+/* ─── FORM ─── */
+.fg{margin-bottom:15px}
+.flbl{display:block;font-size:11px;font-weight:500;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.finp,.ftxt,.fsel{width:100%;background:var(--bg2);border:1px solid var(--border2);color:var(--text);border-radius:var(--r);padding:9px 11px;font-size:14px;transition:border-color .15s}
+.finp:focus,.ftxt:focus,.fsel:focus{outline:none;border-color:var(--accent)}
+.ftxt{resize:vertical;min-height:68px;line-height:1.5;font-family:inherit}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fhint{font-size:11px;color:var(--text3);margin-top:4px;min-height:16px}
+input[type=datetime-local]::-webkit-calendar-picker-indicator{filter:invert(.5)}
 
-  /* ── Filas ── */
-  .gantt-row {
-    display: flex;
-    border-bottom: 1px solid #F8FAFC;
-    min-height: 34px;
-    background: transparent;
-  }
-  .gantt-row:last-child { border-bottom: none; }
-  .gantt-row:hover { background: #FAFBFC; }
+/* ─── IMPORT ─── */
+.itabs{display:flex;gap:2px;background:var(--bg2);border-radius:var(--r);padding:3px;margin-bottom:18px}
+.itab{flex:1;padding:7px;text-align:center;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text2);transition:all .15s}
+.itab.active{background:var(--bg4);color:var(--text)}
+.ipanel{display:none}.ipanel.active{display:block}
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--r);padding:28px;text-align:center;cursor:pointer;transition:all .15s;color:var(--text2)}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);color:var(--text);background:rgba(255,107,53,.05)}
+.drop-zone input{display:none}.drop-ico{font-size:26px;margin-bottom:8px}
+.ibox{background:var(--bg2);border-radius:var(--r);padding:13px;font-size:12px;color:var(--text2);line-height:1.75;margin-top:12px}
+.ibox strong{color:var(--text)}
+.ibox code{background:var(--bg4);padding:1px 5px;border-radius:3px;color:var(--accent2);font-family:monospace;font-size:11px}
+.ireplace{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding-top:14px;margin-top:14px;border-top:1px solid var(--border)}
+.ireplace input{accent-color:var(--accent)}
 
-  .task-cell {
-    flex-shrink: 0;
-    padding: 6px 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: inherit;
-    position: sticky;
-    left: 0;
-    z-index: 3;
-    border-right: 1px solid var(--border);
-  }
-  .gantt-row { background: #fff; }
-  .gantt-row:hover,
-  .gantt-row:hover .task-cell { background: #FAFBFC; }
+/* ─── SHARE ─── */
+.share-row{display:flex;gap:8px;margin:12px 0}
+.share-inp{flex:1;background:var(--bg2);border:1px solid var(--border2);color:var(--text2);border-radius:var(--r);padding:9px 11px;font-size:12px;font-family:monospace;overflow:hidden;text-overflow:ellipsis}
+.copy-msg{font-size:12px;color:var(--success);text-align:center;height:16px}
 
-  .task-name {
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--text);
-    line-height: 1.35;
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    cursor: default;
-  }
-  .task-cell.lvl-2 .task-name { font-weight: 500; }
-  .task-name:hover { color: var(--brand); }
+/* ─── ALERT MODAL ─── */
+.alert-modal{background:var(--bg3);border:1px solid var(--danger);border-radius:var(--rl);width:100%;max-width:440px;animation:slideup .2s ease;box-shadow:0 0 40px rgba(244,67,54,.2)}
+.alert-hdr{padding:20px;text-align:center;border-bottom:1px solid var(--border)}
+.alert-ico{font-size:34px;display:block;margin-bottom:8px;animation:ring .6s ease-in-out infinite alternate}
+@keyframes ring{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+.alert-hdr h2{font-size:17px;font-weight:700;color:var(--danger)}
+.alert-hdr p{font-size:13px;color:var(--text2);margin-top:5px}
+.alert-list{padding:14px 18px;display:flex;flex-direction:column;gap:9px}
+.alert-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 13px}
+.alert-item-name{font-weight:600;font-size:14px;margin-bottom:3px}
+.alert-item-msg{font-size:12px}
+.alert-item-msg.t15{color:var(--warning)}.alert-item-msg.t5{color:#ff6b00}.alert-item-msg.t0{color:var(--danger)}
+.alert-ftr{padding:13px 18px;border-top:1px solid var(--border);display:flex;justify-content:center}
 
-  /* chip numérico minimalista */
-  .lvl-chip {
-    flex-shrink: 0;
-    width: 4px; height: 16px;
-    border-radius: 2px;
-    font-size: 0;            /* ocultamos número: marca de nivel ya es visual */
-    background: #CBD5E1;
-  }
-  .lvl-chip.l2 { background: var(--brand); }
-  .lvl-chip.l3 { background: #E2E8F0; }
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);border:1px solid var(--border2);padding:9px 20px;border-radius:30px;font-size:13px;z-index:1000;transition:transform .25s ease;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-  /* ── Bar (duración) ── */
-  .bar-cell {
-    position: relative;
-    flex-shrink: 0;
-  }
-  /* Fondo: línea vertical muy sutil cada día */
-  .bar-cell::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: linear-gradient(to right, rgba(226,232,240,.5) 0 1px, transparent 1px);
-    background-size: var(--px-day, 28px) 100%;
-    background-repeat: repeat-x;
-    pointer-events: none;
-  }
-  /* Bandas de fin de semana muy sutiles */
-  .weekend-band {
-    position: absolute;
-    top: 0; bottom: 0;
-    background: rgba(15,23,42,.02);
-    pointer-events: none;
-    z-index: 0;
-  }
-  .today-band { display: none; }
-
-  .bar {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 8px;
-    border-radius: 2px;
-    display: flex;
-    align-items: center;
-    padding: 0 8px;
-    font-size: 10px;
-    font-weight: 500;
-    color: #fff;
-    white-space: nowrap;
-    overflow: visible;
-    box-shadow: none;
-    cursor: default;
-    z-index: 1;
-  }
-  .bar-label {
-    position: absolute;
-    left: calc(100% + 8px);
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 11px;
-    color: var(--text-2);
-    font-weight: 400;
-    white-space: nowrap;
-    pointer-events: none;
-  }
-  .bar:hover { filter: brightness(1.05); }
-
-  .bar.urg-critical { background: var(--red); }
-  .bar.urg-high     { background: var(--amber); }
-  .bar.urg-medium   { background: var(--brand); }
-  .bar.urg-low      { background: var(--green); }
-  .bar.urg-none     { background: #CBD5E1; }
-
-  /* Fila sin fechas → placeholder */
-  .bar-empty {
-    font-size: 11px;
-    color: var(--muted);
-    padding-left: 10px;
-  }
-
-  /* Línea vertical de "hoy" */
-  .today-line {
-    position: absolute;
-    top: 0; bottom: 0;
-    width: 1px;
-    background: var(--red);
-    opacity: .4;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  /* Responsable dot minimalista */
-  .resp-dot {
-    width: 18px; height: 18px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: 600;
-    color: #fff;
-    flex-shrink: 0;
-  }
-  .resp-dot.jorge { background: var(--brand); }
-  .resp-dot.diego { background: var(--purple); }
-  .resp-dot.none  { background: #E2E8F0; color: var(--muted); }
-
-  /* Matriz de importancia */
-  .matrix-grid {
-    display: grid;
-    grid-template-columns: 60px repeat(4, 1fr);
-    grid-auto-rows: 90px;
-    gap: 6px;
-  }
-  .m-label {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-  }
-  .m-col-label {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    text-align: center;
-    padding-bottom: 4px;
-    grid-row: 1;
-  }
-  .m-cell {
-    position: relative;
-    background: #F8FAFC;
-    border: 1px dashed var(--border);
-    border-radius: var(--r-sm);
-    padding: 8px;
-    overflow: hidden;
-  }
-  .m-cell.crit { background: #FEF2F2; border-color: #FCA5A5; }
-  .m-cell.warn { background: #FFFBEB; border-color: #FDE68A; }
-  .m-cell.ok   { background: #ECFDF5; border-color: #A7F3D0; }
-  .m-cell.neutral { background: #F1F5F9; border-color: var(--border); }
-  .m-count {
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1;
-  }
-  .m-count .pct { font-size: 11px; color: var(--muted); margin-left: 4px; font-weight: 500; }
-  .m-items {
-    margin-top: 4px;
-    font-size: 10px;
-    color: var(--text-2);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3px;
-  }
-  .m-items .chip {
-    background: #fff;
-    padding: 1px 6px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  /* Empty state */
-  .empty {
-    text-align: center;
-    padding: 80px 20px;
-    color: var(--muted);
-    font-size: 13px;
-  }
-  .empty svg { width: 46px; height: 46px; stroke: #CBD5E1; stroke-width: 1.2; fill: none; margin-bottom: 12px; }
-
-  /* Tooltip simple via title (nativo) */
+/* ─── RESPONSIVE ─── */
+@media(max-width:580px){
+  header{padding:9px 13px}
+  .brand h1{font-size:15px}.brand-badge{display:none}
+  .btn-sm{padding:6px 9px;font-size:11px}
+  .stats{padding:12px 13px}.task-list{padding:0 13px 80px}
+  .filters{padding:0 13px 10px}.frow{grid-template-columns:1fr}
+  .overlay{padding:12px}
+}
 </style>
 </head>
 <body>
 
-<div class="shell">
+<!-- ══════════ HEADER ══════════ -->
+<header>
+  <div class="brand">
+    <h1>Checklist</h1>
+    <span class="brand-badge" id="task-count-badge">0 tareas</span>
+  </div>
+  <div class="hdr-actions">
+    <button class="btn btn-secondary btn-sm" onclick="openImportModal()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Importar
+    </button>
+    <button class="btn btn-secondary btn-sm" onclick="openShareModal()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Compartir
+    </button>
+    <button class="btn btn-primary btn-sm" onclick="openAddModal()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nueva Tarea
+    </button>
+  </div>
+</header>
 
-  <!-- ═══════ SIDEBAR ═══════ -->
-  <aside class="sidebar">
-    <div class="s-brand">
-      <div class="s-title">Panel de Pendientes</div>
-      <div class="s-sub">Lima Retail · Gestor visual</div>
-    </div>
-
-    <div class="s-group-lbl">Fuente de datos</div>
-    <label class="drop-zone" id="dropZone">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="17 8 12 3 7 8"></polyline>
-        <line x1="12" y1="3" x2="12" y2="15"></line>
-      </svg>
-      <div class="drop-zone-lbl">Cargar CSV</div>
-      <div class="drop-zone-hint" id="fileStatus">Arrastra o haz clic</div>
-      <input type="file" id="fileInput" accept=".csv" />
-    </label>
-
-    <div class="s-group-lbl" style="margin-top:14px">Filtros</div>
-    <div style="padding: 0 14px 10px;">
-      <label class="sf-lbl">Responsable</label>
-      <select id="fResp" class="sf-input">
-        <option value="">Todos</option>
-      </select>
-      <label class="sf-lbl" style="margin-top:10px">Urgencia</label>
-      <select id="fUrg" class="sf-input">
-        <option value="">Todas</option>
-        <option value="critical">Crítico (≤ 7d)</option>
-        <option value="high">Alta (8–14d)</option>
-        <option value="medium">Media (15–21d)</option>
-        <option value="low">Baja (22+d)</option>
-        <option value="none">Sin fecha</option>
-      </select>
-      <label class="sf-lbl" style="margin-top:10px">Nivel</label>
-      <div class="sf-presets">
-        <button class="sf-preset on" data-lvl="">Todo</button>
-        <button class="sf-preset" data-lvl="1">Fase</button>
-        <button class="sf-preset" data-lvl="2">Tarea</button>
-        <button class="sf-preset" data-lvl="3">Subtarea</button>
-      </div>
-    </div>
-
-    <div class="s-group-lbl">Leyenda · Urgencia</div>
-    <div class="legend-list">
-      <div class="legend-row"><span class="legend-dot" style="background:var(--red)"></span> Crítico · ≤ 7 días</div>
-      <div class="legend-row"><span class="legend-dot" style="background:var(--amber)"></span> Alta · 8–14 días</div>
-      <div class="legend-row"><span class="legend-dot" style="background:var(--brand)"></span> Media · 15–21 días</div>
-      <div class="legend-row"><span class="legend-dot" style="background:var(--green)"></span> Baja · 22+ días</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#CBD5E1"></span> Sin fecha asignada</div>
-    </div>
-
-    <div class="s-footer">
-      Lima Retail · v1.0<br/>
-      <span id="todayStr"></span>
-    </div>
-  </aside>
-
-  <!-- ═══════ MAIN ═══════ -->
-  <main class="main">
-
-    <div class="topbar">
-      <div>
-        <div class="topbar-title">Gestor de Proyectos</div>
-        <div class="topbar-sub">
-          <span class="topbar-pill" id="pillTotal">— tareas</span>
-          <span class="topbar-pill" id="pillFases">— fases</span>
-          <span class="topbar-pill" id="pillRange">—</span>
-        </div>
-      </div>
-      <div class="topbar-actions">
-        <button class="btn" id="btnReload">↻ Recargar CSV</button>
-        <button class="btn primary" id="btnExport">Exportar vista</button>
-      </div>
-    </div>
-
-    <div class="content">
-
-      <!-- KPIs -->
-      <div class="kpi-grid" id="kpiGrid">
-        <div class="kpi-card">
-          <div class="kpi-icon blue"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
-          <div class="kpi-lbl">Total tareas</div>
-          <div class="kpi-val blue" id="kTotal">—</div>
-          <div class="kpi-sub" id="kTotalSub">— subtareas</div>
-        </div>
-        <div class="kpi-card filterable" data-filter-urg="critical" id="kpiCrit" title="Click para filtrar por críticas">
-          <div class="kpi-icon red"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
-          <div class="kpi-lbl">Críticas (≤ 7 días)</div>
-          <div class="kpi-val red" id="kCrit">—</div>
-          <div class="kpi-sub" id="kCritSub">Requieren atención</div>
-        </div>
-        <div class="kpi-card filterable" data-filter-urg="high" id="kpiHigh" title="Click para filtrar por alta prioridad">
-          <div class="kpi-icon amber"><svg viewBox="0 0 24 24"><path d="M12 2l10 18H2z"></path><line x1="12" y1="10" x2="12" y2="14"></line></svg></div>
-          <div class="kpi-lbl">Alta prioridad</div>
-          <div class="kpi-val amber" id="kHigh">—</div>
-          <div class="kpi-sub" id="kHighSub">Entre 8 y 14 días</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-icon purple"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
-          <div class="kpi-lbl">Filtrar por responsable</div>
-          <select class="kpi-val purple kpi-select" id="kRespSelect">
-            <option value="">Todos</option>
-          </select>
-          <div class="kpi-sub" id="kRespSub">—</div>
-        </div>
-      </div>
-
-      <!-- Timeline / Gantt -->
-      <div class="panel">
-        <div class="panel-head">
-          <div>
-            <div class="panel-title">Línea de tiempo · Duración visual</div>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <span class="pill blue" id="ganttRange">—</span>
-          </div>
-        </div>
-        <div id="ganttContainer"></div>
-      </div>
-
-    </div>
-  </main>
+<!-- ══════════ STATS ══════════ -->
+<div class="stats">
+  <div class="stat active" id="stat-all" onclick="setFilter(null)">
+    <div class="stat-val" id="sv-total">0</div><div class="stat-lbl">Total</div>
+  </div>
+  <div class="stat" id="stat-pendiente" onclick="setFilter('pendiente')">
+    <div class="stat-val" id="sv-pendiente">0</div><div class="stat-lbl">Pendientes</div>
+  </div>
+  <div class="stat" id="stat-en_proceso" onclick="setFilter('en_proceso')">
+    <div class="stat-val" id="sv-en_proceso">0</div><div class="stat-lbl">En Proceso</div>
+  </div>
+  <div class="stat" id="stat-completada" onclick="setFilter('completada')">
+    <div class="stat-val" id="sv-completada">0</div><div class="stat-lbl">Completadas</div>
+  </div>
+  <div class="stat" id="stat-vencida" onclick="setFilter('vencida')">
+    <div class="stat-val" id="sv-vencida">0</div><div class="stat-lbl">Vencidas</div>
+  </div>
 </div>
 
+<!-- ══════════ FILTERS ══════════ -->
+<div class="filters">
+  <div class="sort-wrap">
+    <span class="sort-lbl">Ordenar:</span>
+    <select class="sort-sel" id="sort-sel" onchange="activeSort=this.value;renderTasks()">
+      <option value="time">Por tiempo</option>
+      <option value="status">Por estado</option>
+      <option value="name">Por nombre</option>
+      <option value="created">Por creación</option>
+    </select>
+  </div>
+</div>
+
+<!-- ══════════ TASK LIST ══════════ -->
+<div class="task-list" id="task-list"></div>
+
+<!-- ══════════ TASK MODAL ══════════ -->
+<div id="task-modal" class="overlay" style="display:none" onclick="overlayClick(event,'task-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <h2 id="modal-title">Nueva Tarea</h2>
+      <button class="btn-icon" onclick="closeModal('task-modal')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label class="flbl">Nombre de la tarea *</label>
+        <input type="text" id="f-name" class="finp" placeholder="¿Qué hay que hacer?" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label class="flbl">Descripción</label>
+        <textarea id="f-desc" class="ftxt" placeholder="Detalles opcionales…"></textarea>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label class="flbl">Inicio</label>
+          <input type="datetime-local" id="f-start" class="finp">
+        </div>
+        <div class="fg">
+          <label class="flbl">Duración (minutos)</label>
+          <input type="number" id="f-duration" class="finp" placeholder="ej. 60" min="1">
+          <div class="fhint" id="f-dur-hint"></div>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="flbl">Estado</label>
+        <select id="f-status" class="fsel">
+          <option value="pendiente">⚪ Pendiente</option>
+          <option value="en_proceso">🔵 En Proceso</option>
+          <option value="completada">🟢 Completada</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-ghost" onclick="closeModal('task-modal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveTask()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ IMPORT MODAL ══════════ -->
+<div id="import-modal" class="overlay" style="display:none" onclick="overlayClick(event,'import-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <h2>Importar Tareas</h2>
+      <button class="btn-icon" onclick="closeModal('import-modal')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="itabs">
+        <div class="itab active" onclick="switchTab(0)">📄 Archivo</div>
+        <div class="itab" onclick="switchTab(1)">🔗 Google Sheets</div>
+        <div class="itab" onclick="switchTab(2)">📋 Pegar CSV</div>
+      </div>
+
+      <div class="ipanel active" id="ip-0">
+        <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-inp').click()">
+          <input type="file" id="file-inp" accept=".csv,.xlsx,.xls" onchange="handleFile(this)">
+          <div class="drop-ico">📂</div>
+          <div style="font-weight:600;margin-bottom:4px">Arrastra aquí o haz clic</div>
+          <div style="font-size:12px;color:var(--text3)">CSV · XLSX · XLS</div>
+        </div>
+        <div class="ibox">
+          <strong>Columnas reconocidas (cualquier orden):</strong><br>
+          <code>nombre</code> &nbsp;·&nbsp; <code>descripcion</code> &nbsp;·&nbsp; <code>inicio</code> &nbsp;·&nbsp; <code>duracion</code> &nbsp;·&nbsp; <code>estado</code>
+        </div>
+      </div>
+
+      <div class="ipanel" id="ip-1">
+        <div class="fg">
+          <label class="flbl">URL del Google Sheets</label>
+          <input type="url" id="sheets-url" class="finp" placeholder="https://docs.google.com/spreadsheets/d/…">
+        </div>
+        <div class="ibox">
+          <strong>Pasos para publicar tu hoja:</strong><br>
+          1. Abre el Google Sheets<br>
+          2. <strong>Archivo → Compartir → Publicar en la web</strong><br>
+          3. Elige <strong>Valores separados por comas (.csv)</strong><br>
+          4. Copia el enlace y pégalo arriba<br><br>
+          También funciona el enlace de exportación directa:<br>
+          <code>…/export?format=csv&amp;gid=0</code>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="importSheets()">Importar desde Sheets</button>
+      </div>
+
+      <div class="ipanel" id="ip-2">
+        <div class="fg">
+          <label class="flbl">Pega tu CSV aquí</label>
+          <textarea id="csv-txt" class="ftxt" style="min-height:130px;font-family:monospace;font-size:12px" placeholder="nombre,descripcion,inicio,duracion,estado&#10;Reunión equipo,Ver avances,2026-05-17T10:00,60,pendiente"></textarea>
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="importCSVText()">Importar CSV</button>
+      </div>
+
+      <label class="ireplace">
+        <input type="checkbox" id="imp-replace">
+        Reemplazar lista completa (por defecto, se agregan las tareas a la lista actual)
+      </label>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SHARE MODAL ══════════ -->
+<div id="share-modal" class="overlay" style="display:none" onclick="overlayClick(event,'share-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <h2>Compartir Checklist</h2>
+      <button class="btn-icon" onclick="closeModal('share-modal')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--text2);font-size:13px;margin-bottom:14px">
+        Cualquier persona con este enlace puede ver y editar la lista. El estado actual queda codificado en la URL.
+      </p>
+      <div class="share-row">
+        <input type="text" id="share-url" class="share-inp" readonly>
+        <button class="btn btn-primary" onclick="copyURL()">Copiar</button>
+      </div>
+      <div class="copy-msg" id="copy-msg"></div>
+      <div class="ibox" style="margin-top:14px">
+        <strong>Cómo funciona:</strong><br>
+        · La URL incluye todas las tareas actuales codificadas<br>
+        · Al abrir el enlace, se ofrece cargar la lista compartida<br>
+        · Cada persona puede editar y re-compartir su versión actualizada<br>
+        · Para sincronización de equipo, usa la importación desde Google Sheets
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ALERT MODAL ══════════ -->
+<div id="alert-modal" class="overlay" style="display:none">
+  <div class="alert-modal" onclick="event.stopPropagation()">
+    <div class="alert-hdr">
+      <span class="alert-ico">⏰</span>
+      <h2>Alerta de Tiempo</h2>
+      <p>Las siguientes tareas requieren tu atención</p>
+    </div>
+    <div class="alert-list" id="alert-list"></div>
+    <div class="alert-ftr">
+      <button class="btn btn-danger-ghost" style="padding:9px 30px" onclick="closeModal('alert-modal')">Entendido</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-/* ═══════════════════════════════════════════════════════════════════
-   PARSER CSV  (soporta comillas y saltos de línea dentro de celda)
-   ═══════════════════════════════════════════════════════════════════ */
-function parseCSV(text) {
-  const rows = [];
-  let cur = [], field = '', inQuotes = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i], n = text[i+1];
-    if (inQuotes) {
-      if (c === '"' && n === '"') { field += '"'; i++; }
-      else if (c === '"') { inQuotes = false; }
-      else { field += c; }
-    } else {
-      if (c === '"') { inQuotes = true; }
-      else if (c === ',') { cur.push(field); field = ''; }
-      else if (c === '\r') { /* skip */ }
-      else if (c === '\n') { cur.push(field); rows.push(cur); cur = []; field = ''; }
-      else { field += c; }
+// ══ STATE ══
+let tasks = [];
+let editingId = null;
+let activeFilter = null;
+let activeSort = 'time';
+let notifOK = false;
+const SK = 'lr_checklist_v2';
+
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded', () => {
+  loadTasks();
+  checkURLImport();
+  askNotifPermission();
+  setupDropZone();
+  document.getElementById('f-duration').addEventListener('input', updateDurHint);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      ['task-modal','import-modal','share-modal','alert-modal'].forEach(closeModal);
     }
-  }
-  if (field.length || cur.length) { cur.push(field); rows.push(cur); }
-  return rows;
-}
+    if (e.key === 'n' && !e.ctrlKey && !e.metaKey && !e.altKey &&
+        e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
+      openAddModal();
+    }
+  });
+  setInterval(checkAlerts, 30000);
+  setInterval(renderTasks, 1000);
+  checkAlerts();
+  renderTasks();
+});
 
-/* ═══ Fechas DD/MM/YYYY ═══ */
-function parseDate(s) {
-  if (!s) return null;
-  const m = s.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (!m) return null;
-  return new Date(+m[3], +m[2]-1, +m[1]);
+// ══ STORAGE ══
+function saveTasks() { localStorage.setItem(SK, JSON.stringify(tasks)); }
+function loadTasks() {
+  try {
+    const raw = localStorage.getItem(SK);
+    tasks = raw ? JSON.parse(raw).map(norm) : [];
+  } catch { tasks = []; }
 }
-function fmtDate(d) {
-  if (!d) return '—';
-  return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0');
-}
-const WEEKDAYS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-function weekdayShort(d) { return WEEKDAYS[d.getDay()]; }
-function daysBetween(a, b) {
-  return Math.round((b - a) / 86400000);
-}
-
-/* ═══ Urgencia desde "Días Restantes" ═══ */
-function urgClass(dias) {
-  if (dias == null || dias === '' || isNaN(dias)) return 'none';
-  const d = +dias;
-  if (d <= 7)  return 'critical';
-  if (d <= 14) return 'high';
-  if (d <= 21) return 'medium';
-  return 'low';
-}
-function urgLabel(c) {
-  return { critical:'Crítico', high:'Alta', medium:'Media', low:'Baja', none:'Sin fecha' }[c];
-}
-
-/* ═══ ESTADO ═══ */
-let DATA = {
-  rows: [],       // filas parseadas con estructura limpia
-  phases: [],     // [{ name, sub, tasks:[...] }]
-  minDate: null,
-  maxDate: null,
-};
-let FILTERS = { resp: '', urg: '', lvl: '' };
-
-/* ═══ Normaliza filas a estructura ═══ */
-function normalize(rawRows) {
-  const header = rawRows[0];
-  const body = rawRows.slice(1).filter(r => r.some(c => c && c.trim()));
-  const idx = {
-    nivel: header.findIndex(h => /nivel/i.test(h)),
-    tema:  header.findIndex(h => /tema|tarea/i.test(h)),
-    com:   header.findIndex(h => /coment/i.test(h)),
-    resp:  header.findIndex(h => /respons/i.test(h)),
-    ini:   header.findIndex(h => /inicio/i.test(h)),
-    fin:   header.findIndex(h => /l[íi]mite/i.test(h)),
-    dias:  header.findIndex(h => /d[íi]as/i.test(h)),
+function norm(t) {
+  return {
+    id: t.id || uid(),
+    name: t.name || 'Sin nombre',
+    description: t.description || '',
+    startDateTime: t.startDateTime || '',
+    durationMinutes: Number(t.durationMinutes) || 0,
+    status: ['pendiente','en_proceso','completada'].includes(t.status) ? t.status : 'pendiente',
+    alertsShown: t.alertsShown || { 15: false, 5: false, 0: false },
+    createdAt: t.createdAt || new Date().toISOString()
   };
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 
-  const out = [];
-  for (const r of body) {
-    const nivel = parseInt(r[idx.nivel]) || null;
-    if (!nivel) continue;
-    out.push({
-      nivel,
-      tema:  (r[idx.tema]  || '').trim(),
-      com:   (r[idx.com]   || '').trim(),
-      resp:  (r[idx.resp]  || '').trim(),
-      ini:   parseDate(r[idx.ini]),
-      fin:   parseDate(r[idx.fin]),
-      dias:  r[idx.dias] === '' ? null : parseInt(r[idx.dias]),
-    });
-  }
-  return out;
+// ══ ENCODE / DECODE ══
+function encode(data) {
+  try { return btoa(unescape(encodeURIComponent(JSON.stringify(data)))); } catch { return ''; }
+}
+function decode(s) {
+  try { return JSON.parse(decodeURIComponent(escape(atob(s)))); } catch { return null; }
 }
 
-/* ═══ Agrupa por fase (nivel 1) ═══ */
-function groupByPhase(rows) {
-  const phases = [];
-  let current = null;
-  for (const r of rows) {
-    if (r.nivel === 1) {
-      current = { name: r.tema, sub: r.com, tasks: [] };
-      phases.push(current);
-    } else if (current) {
-      current.tasks.push(r);
+// ══ URL IMPORT ══
+function checkURLImport() {
+  const p = new URLSearchParams(window.location.search);
+  const d = p.get('d');
+  if (!d) return;
+  window.history.replaceState({}, '', window.location.pathname);
+  const imported = decode(d);
+  if (!Array.isArray(imported) || imported.length === 0) return;
+  if (confirm(`Se recibió una lista compartida con ${imported.length} tarea(s).\n¿Deseas cargarla? (se reemplazará tu lista actual)`)) {
+    tasks = imported.map(norm);
+    saveTasks();
+    toast(`✓ ${imported.length} tareas importadas`);
+  }
+}
+
+// ══ NOTIFICATIONS ══
+function askNotifPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') { notifOK = true; return; }
+  if (Notification.permission !== 'denied') {
+    Notification.requestPermission().then(p => { notifOK = p === 'granted'; });
+  }
+}
+function sendNotif(title, body) {
+  if (!notifOK) return;
+  try { new Notification(title, { body, tag: 'lr-cl' }); } catch {}
+}
+
+// ══ TIME ══
+function getTimes(task) {
+  if (!task.startDateTime || !task.durationMinutes) {
+    return { progress: 0, remainingMs: null, isOverdue: false, isStarted: false, totalMs: 0, start: 0, end: 0 };
+  }
+  const now = Date.now();
+  const start = new Date(task.startDateTime).getTime();
+  const totalMs = task.durationMinutes * 60000;
+  const end = start + totalMs;
+  const remainingMs = end - now;
+  const elapsedMs = now - start;
+  const progress = Math.min(100, Math.max(0, (elapsedMs / totalMs) * 100));
+  return { start, end, totalMs, remainingMs, elapsedMs, progress, isStarted: now >= start, isOverdue: remainingMs < 0 };
+}
+
+function fmtMs(ms) {
+  const a = Math.abs(ms);
+  const h = Math.floor(a / 3600000);
+  const m = Math.floor((a % 3600000) / 60000);
+  const s = Math.floor((a % 60000) / 1000);
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
+
+function timeClass(task) {
+  if (task.status === 'completada') return 'muted';
+  const { remainingMs, isOverdue, isStarted } = getTimes(task);
+  if (remainingMs === null || !isStarted) return 'muted';
+  if (isOverdue) return 'over';
+  if (remainingMs < 5 * 60000) return 'crit';
+  if (remainingMs < 15 * 60000) return 'warn';
+  return 'ok';
+}
+
+// ══ ALERTS ══
+function checkAlerts() {
+  const alerts = [];
+  tasks.forEach(task => {
+    if (task.status === 'completada') return;
+    if (!task.startDateTime || !task.durationMinutes) return;
+    const { remainingMs } = getTimes(task);
+    if (remainingMs === null) return;
+    const rem = remainingMs / 60000;
+    if (!task.alertsShown) task.alertsShown = { 15: false, 5: false, 0: false };
+    if (rem <= 15 && rem > 5 && !task.alertsShown[15]) {
+      alerts.push({ task, type: 15, msg: 'Faltan 15 minutos' });
+      task.alertsShown[15] = true;
     }
+    if (rem <= 5 && rem > 0 && !task.alertsShown[5]) {
+      alerts.push({ task, type: 5, msg: '¡Solo faltan 5 minutos!' });
+      task.alertsShown[5] = true;
+    }
+    if (rem <= 0 && !task.alertsShown[0]) {
+      alerts.push({ task, type: 0, msg: '¡La tarea ha vencido!' });
+      task.alertsShown[0] = true;
+    }
+  });
+  if (alerts.length === 0) return;
+  saveTasks();
+  const list = document.getElementById('alert-list');
+  list.innerHTML = alerts.map(({ task, type, msg }) => `
+    <div class="alert-item">
+      <div class="alert-item-name">${esc(task.name)}</div>
+      <div class="alert-item-msg t${type}">${msg}</div>
+    </div>`).join('');
+  openModal('alert-modal');
+  alerts.forEach(({ msg, task }) => sendNotif(`⏰ ${msg}`, task.name));
+}
+
+// ══ RENDER ══
+function renderTasks() {
+  let list = [...tasks];
+
+  if (activeFilter === 'vencida') {
+    list = list.filter(t => t.status !== 'completada' && getTimes(t).isOverdue);
+  } else if (activeFilter) {
+    list = list.filter(t => t.status === activeFilter);
   }
-  return phases;
-}
 
-/* ═══ Render ═══ */
-function renderAll() {
-  // Filtro "Fase" (nivel 1): oculta todas las filas de tareas y muestra solo las cabeceras de fase
-  const onlyPhases = FILTERS.lvl === '1';
-
-  const filteredPhases = DATA.phases.map(ph => ({
-    ...ph,
-    tasks: onlyPhases ? [] : ph.tasks.filter(t => {
-      if (FILTERS.resp && t.resp !== FILTERS.resp) return false;
-      if (FILTERS.urg  && urgClass(t.dias) !== FILTERS.urg) return false;
-      if (FILTERS.lvl  && String(t.nivel) !== FILTERS.lvl) return false;
-      return true;
-    })
-  })).filter(ph => onlyPhases || ph.tasks.length > 0);
-
-  const allTasks = filteredPhases.flatMap(p => p.tasks);
-  renderKPIs(allTasks);
-  renderGantt(filteredPhases);
-}
-
-function renderKPIs(tasks) {
-  const total   = tasks.length;
-  const lvl3    = tasks.filter(t => t.nivel === 3).length;
-
-  // Críticas y Alta: SIEMPRE se calculan sobre el dataset completo (ignorando el filtro
-  // de urgencia) para que los contadores no colapsen cuando la misma tarjeta está activa.
-  const baseForUrg = DATA.rows.filter(t => {
-    if (t.nivel === 1) return false;
-    if (FILTERS.resp && t.resp !== FILTERS.resp) return false;
-    if (FILTERS.lvl  && String(t.nivel) !== FILTERS.lvl) return false;
-    return true;
-  });
-  const crit = baseForUrg.filter(t => urgClass(t.dias) === 'critical').length;
-  const high = baseForUrg.filter(t => urgClass(t.dias) === 'high').length;
-
-  document.getElementById('kTotal').textContent = total;
-  document.getElementById('kTotalSub').textContent = lvl3 + ' subtareas · ' + (total - lvl3) + ' tareas';
-  document.getElementById('kCrit').textContent = crit;
-  document.getElementById('kCritSub').textContent = crit ? 'Cerrar antes de 7 días' : 'Sin urgencias críticas';
-  document.getElementById('kHigh').textContent = high;
-  document.getElementById('kHighSub').textContent = high ? 'Entre 8 y 14 días' : 'Sin alta prioridad';
-
-  // Carga por responsable — el selector ya lleva el valor seleccionado
-  const byResp = {};
-  tasks.forEach(t => {
-    const r = t.resp || '—';
-    byResp[r] = (byResp[r] || 0) + 1;
-  });
-  const nResp = Object.keys(byResp).filter(k => k !== '—').length;
-  const subEl = document.getElementById('kRespSub');
-  if (FILTERS.resp) {
-    subEl.textContent = total + (total === 1 ? ' tarea asignada' : ' tareas asignadas');
+  if (activeSort === 'time') {
+    list.sort((a, b) => {
+      const ra = getTimes(a).remainingMs;
+      const rb = getTimes(b).remainingMs;
+      if (ra === null && rb === null) return 0;
+      if (ra === null) return 1; if (rb === null) return -1;
+      return ra - rb;
+    });
+  } else if (activeSort === 'name') {
+    list.sort((a, b) => a.name.localeCompare(b.name, 'es'));
+  } else if (activeSort === 'status') {
+    const o = { en_proceso: 0, pendiente: 1, completada: 2 };
+    list.sort((a, b) => (o[a.status] ?? 1) - (o[b.status] ?? 1));
   } else {
-    const topResp = Object.entries(byResp).sort((a,b) => b[1] - a[1])[0];
-    subEl.textContent = topResp
-      ? nResp + (nResp === 1 ? ' responsable · top ' : ' responsables · top ') + topResp[0]
-      : 'Sin asignar';
+    list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   }
 
-  // Estado visual de tarjetas clickeables
-  updateKPIActiveStates();
-
-  // Topbar pills
-  document.getElementById('pillTotal').textContent = total + ' tareas';
-  document.getElementById('pillFases').textContent = DATA.phases.length + ' fases';
-  if (DATA.minDate && DATA.maxDate) {
-    document.getElementById('pillRange').textContent =
-      fmtDate(DATA.minDate) + ' → ' + fmtDate(DATA.maxDate);
+  const el = document.getElementById('task-list');
+  if (list.length === 0) {
+    el.innerHTML = `<div class="empty"><div class="empty-ico">📋</div>
+      <p>${activeFilter ? 'No hay tareas con este filtro.' : 'Aún no tienes tareas.'}</p>
+      ${!activeFilter ? `<button class="btn btn-primary" onclick="openAddModal()">+ Agregar primera tarea</button>` : ''}
+    </div>`;
+  } else {
+    el.innerHTML = list.map(renderCard).join('');
   }
-}
 
-function updateKPIActiveStates() {
-  document.querySelectorAll('.kpi-card.filterable').forEach(card => {
-    card.classList.toggle('active', card.dataset.filterUrg === FILTERS.urg && FILTERS.urg !== '');
+  // Stats
+  let total=0, pendiente=0, en_proceso=0, completada=0, vencida=0;
+  tasks.forEach(t => {
+    total++;
+    if (t.status === 'completada') completada++;
+    else {
+      if (t.status === 'pendiente') pendiente++;
+      if (t.status === 'en_proceso') en_proceso++;
+      if (getTimes(t).isOverdue) vencida++;
+    }
   });
+  document.getElementById('sv-total').textContent = total;
+  document.getElementById('sv-pendiente').textContent = pendiente;
+  document.getElementById('sv-en_proceso').textContent = en_proceso;
+  document.getElementById('sv-completada').textContent = completada;
+  document.getElementById('sv-vencida').textContent = vencida;
+  document.getElementById('task-count-badge').textContent = `${total} tarea${total !== 1 ? 's' : ''}`;
 }
 
-/* ═══ Gantt diario ═══
-   Configuración:
-   - PX_DAY: ancho fijo por día (px) → 32 px permite ver ~30 días en ~960px
-   - TASK_W: ancho de la columna de tareas (sticky-left)
-   El rango mostrado se extiende al menos 30 días después de hoy.           */
-const PX_DAY   = 28;
-const TASK_W   = 260;
-const MIN_FWD  = 30;   // días mínimos hacia adelante desde hoy
+function renderCard(task) {
+  const t = getTimes(task);
+  const isOver = task.status !== 'completada' && t.isOverdue;
+  const cls = isOver ? 'vencida' : task.status;
+  const tc = timeClass(task);
 
-function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate()+n); return x; }
-function sameDay(a, b) { return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
-
-function renderGantt(phases) {
-  const container = document.getElementById('ganttContainer');
-  if (!phases.length) {
-    container.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><div>Sin resultados con los filtros aplicados.</div></div>';
-    return;
+  let timeText = '';
+  if (task.status === 'completada') {
+    timeText = '✓ Completada';
+  } else if (t.remainingMs === null) {
+    timeText = 'Sin tiempo configurado';
+  } else if (!t.isStarted) {
+    timeText = `Inicia en ${fmtMs(t.start - Date.now())}`;
+  } else if (isOver) {
+    timeText = `Venció hace ${fmtMs(t.remainingMs)}`;
+  } else {
+    timeText = `${fmtMs(t.remainingMs)} restantes`;
   }
 
-  // Rango estable: del mínimo del dataset hasta max(maxDato, hoy + 30 días)
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const minData = DATA.minDate || today;
-  const maxData = DATA.maxDate || today;
-  const min = new Date(minData); min.setHours(0,0,0,0);
-  const forwardTarget = addDays(today, MIN_FWD);
-  const max = new Date(Math.max(maxData.getTime(), forwardTarget.getTime()));
-  max.setHours(0,0,0,0);
+  const startFmt = task.startDateTime
+    ? new Date(task.startDateTime).toLocaleString('es-PE', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
+    : '';
+  const durFmt = task.durationMinutes > 0
+    ? (task.durationMinutes >= 60
+        ? `${Math.floor(task.durationMinutes/60)}h${task.durationMinutes % 60 ? ' '+(task.durationMinutes%60)+'m' : ''}`
+        : `${task.durationMinutes}m`)
+    : '';
+  const prog = task.status === 'completada' ? 100 : Math.round(t.progress || 0);
 
-  const totalDays  = Math.max(1, daysBetween(min, max) + 1);    // inclusivo
-  const timelineW  = totalDays * PX_DAY;
+  return `<div class="card s-${cls}" id="c-${task.id}">
+    <div class="card-top">
+      <div class="card-name">${esc(task.name)}</div>
+      <div class="card-actions">
+        <button class="btn-icon" title="Editar" onclick="openEditModal('${task.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="btn-icon del" title="Eliminar" onclick="delTask('${task.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>
+    ${task.description ? `<div class="card-desc">${esc(task.description)}</div>` : ''}
+    <div class="card-meta">
+      ${startFmt ? `<span class="card-meta-item">📅 ${startFmt}</span>` : ''}
+      ${durFmt ? `<span class="card-meta-item">⏱️ ${durFmt}</span>` : ''}
+    </div>
+    <div class="card-foot">
+      <select class="status-sel" onchange="setStatus('${task.id}',this.value)">
+        <option value="pendiente" ${task.status==='pendiente'?'selected':''}>⚪ Pendiente</option>
+        <option value="en_proceso" ${task.status==='en_proceso'?'selected':''}>🔵 En Proceso</option>
+        <option value="completada" ${task.status==='completada'?'selected':''}>🟢 Completada</option>
+      </select>
+      <div class="time-rem ${tc}">${timeText}</div>
+    </div>
+    ${task.durationMinutes > 0 ? `<div class="prog-wrap"><div class="prog-bar ${tc}" style="width:${prog}%"></div></div>` : ''}
+  </div>`;
+}
 
-  document.getElementById('ganttRange').textContent = fmtDate(min) + ' → ' + fmtDate(max);
+// ══ FILTER ══
+function setFilter(f) {
+  activeFilter = f;
+  const map = { null:'stat-all', pendiente:'stat-pendiente', en_proceso:'stat-en_proceso', completada:'stat-completada', vencida:'stat-vencida' };
+  document.querySelectorAll('.stat').forEach(el => el.classList.remove('active'));
+  document.getElementById(map[String(f)] || 'stat-all')?.classList.add('active');
+  renderTasks();
+}
 
-  // Genera un array con un Date por cada día del rango
-  const MONTHS_ABBR = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
-  const days = [];
-  for (let i = 0; i < totalDays; i++) days.push(addDays(min, i));
+// ══ TASK CRUD ══
+function setStatus(id, status) {
+  const t = tasks.find(t => t.id === id);
+  if (t) { t.status = status; saveTasks(); }
+}
+function delTask(id) {
+  if (!confirm('¿Eliminar esta tarea?')) return;
+  tasks = tasks.filter(t => t.id !== id);
+  saveTasks(); renderTasks(); toast('Tarea eliminada');
+}
 
-  let html = '';
-  phases.forEach(ph => {
-    const lvl3 = ph.tasks.filter(t => t.nivel === 3).length;
-    const lvl2 = ph.tasks.filter(t => t.nivel === 2).length;
+// ══ MODALS ══
+function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (!el || el.style.display === 'none') return;
+  el.style.display = 'none'; document.body.style.overflow = '';
+  if (id === 'task-modal') { editingId = null; resetForm(); }
+}
+function overlayClick(e, id) { if (e.target === e.currentTarget) closeModal(id); }
 
-    html += '<div class="phase-block">';
-    html += '<div class="phase-head">';
-    html += '<div class="phase-title">' + escapeHTML(ph.name) + '</div>';
-    html += '<div class="phase-meta">';
-    html += '<span><span class="count">' + lvl2 + '</span> tareas</span>';
-    html += '<span><span class="count">' + lvl3 + '</span> subtareas</span>';
-    html += '</div></div>';
-
-    // Si el filtro oculta todas las tareas, solo mostramos la cabecera de fase
-    if (!ph.tasks.length) { html += '</div>'; return; }
-
-    html += '<div class="gantt-block" style="--px-day:' + PX_DAY + 'px">';
-
-    // Cabecera de días (única fila)
-    html += '<div class="gantt-days">';
-    html += '<div class="task-col-stub day-tick" style="width:' + TASK_W + 'px"></div>';
-    days.forEach((d, i) => {
-      const wd = d.getDay();
-      const isWeekend = wd === 0 || wd === 6;
-      const isToday = sameDay(d, today);
-      const isMonthStart = (d.getDate() === 1) || i === 0;
-      const classes = ['day-tick'];
-      if (isToday)      classes.push('is-today');
-      if (isWeekend)    classes.push('weekend');
-      if (isMonthStart) classes.push('month-start');
-      html += '<div class="' + classes.join(' ') + '" style="width:' + PX_DAY + 'px">';
-      if (isMonthStart) {
-        html += '<span class="mon">' + MONTHS_ABBR[d.getMonth()] + '</span>';
-      } else {
-        html += '<span class="wd">' + weekdayShort(d) + '</span>';
-      }
-      html += '<span class="dt">' + String(d.getDate()).padStart(2,'0') + '</span>';
-      html += '</div>';
-    });
-    html += '</div>';
-
-    // Filas
-    ph.tasks.forEach(t => {
-      const urg = urgClass(t.dias);
-      const respKey = t.resp.toLowerCase() || 'none';
-      const respInitial = t.resp ? t.resp[0].toUpperCase() : '·';
-      const lvlClass = 'lvl-' + t.nivel;
-
-      html += '<div class="gantt-row">';
-      html += '<div class="task-cell ' + lvlClass + '" style="width:' + TASK_W + 'px">';
-      html += '<span class="lvl-chip ' + (t.nivel===2?'l2':'l3') + '" aria-hidden="true"></span>';
-      html += '<span class="resp-dot ' + respKey + '" title="' + escapeAttr(t.resp || 'Sin asignar') + '">' + respInitial + '</span>';
-      html += '<span class="task-name" title="' + escapeAttr(t.tema + (t.com ? ' · ' + t.com : '')) + '">' + escapeHTML(t.tema) + '</span>';
-      html += '</div>';
-
-      html += '<div class="bar-cell" style="width:' + timelineW + 'px">';
-
-      // Bandas de fin de semana muy sutiles
-      days.forEach((d, i) => {
-        const wd = d.getDay();
-        if (wd === 0 || wd === 6) {
-          html += '<div class="weekend-band" style="left:' + (i*PX_DAY) + 'px; width:' + PX_DAY + 'px"></div>';
-        }
-      });
-
-      // Línea "hoy"
-      if (today >= min && today <= max) {
-        const tIdx = daysBetween(min, today);
-        html += '<div class="today-line" style="left:' + (tIdx*PX_DAY + PX_DAY/2) + 'px"></div>';
-      }
-
-      if (t.ini && t.fin) {
-        const startIdx = daysBetween(min, t.ini);
-        const durDays  = Math.max(1, daysBetween(t.ini, t.fin) + 1);
-        const startPx  = startIdx * PX_DAY;
-        const widthPx  = durDays * PX_DAY;
-        const tooltip  = t.tema + '\n' + fmtDate(t.ini) + ' → ' + fmtDate(t.fin) + ' (' + durDays + ' días)' +
-                         (t.resp ? '\nResponsable: ' + t.resp : '') +
-                         (t.com ? '\n' + t.com : '');
-        html += '<div class="bar urg-' + urg + '" style="left:' + startPx + 'px; width:' + widthPx + 'px;" title="' + escapeAttr(tooltip) + '"></div>';
-      } else {
-        html += '<span class="bar-empty" style="position:absolute; left:10px; top:50%; transform:translateY(-50%);">—</span>';
-      }
-      html += '</div>';
-      html += '</div>';
-    });
-
-    html += '</div></div>';
-  });
-
-  container.innerHTML = html;
-
-  // Auto-scroll: cada bloque scrollea para mostrar "hoy" cerca del borde izquierdo
-  if (DATA.minDate) {
-    const tIdx = daysBetween(min, today);
-    const scrollTo = Math.max(0, tIdx * PX_DAY - 20);
-    container.querySelectorAll('.gantt-block').forEach(bl => { bl.scrollLeft = scrollTo; });
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Nueva Tarea';
+  resetForm();
+  const d = new Date(); d.setMinutes(d.getMinutes() + 15, 0, 0);
+  document.getElementById('f-start').value = dtLocal(d);
+  document.getElementById('f-duration').value = '60';
+  updateDurHint();
+  openModal('task-modal');
+  setTimeout(() => document.getElementById('f-name').focus(), 80);
+}
+function openEditModal(id) {
+  editingId = id;
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  document.getElementById('modal-title').textContent = 'Editar Tarea';
+  document.getElementById('f-name').value = t.name;
+  document.getElementById('f-desc').value = t.description;
+  document.getElementById('f-start').value = t.startDateTime;
+  document.getElementById('f-duration').value = t.durationMinutes || '';
+  document.getElementById('f-status').value = t.status;
+  updateDurHint();
+  openModal('task-modal');
+  setTimeout(() => document.getElementById('f-name').focus(), 80);
+}
+function resetForm() {
+  ['f-name','f-desc','f-start','f-duration'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('f-status').value = 'pendiente';
+  document.getElementById('f-dur-hint').textContent = '';
+}
+function saveTask() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { document.getElementById('f-name').focus(); toast('El nombre es obligatorio'); return; }
+  const data = {
+    name,
+    description: document.getElementById('f-desc').value.trim(),
+    startDateTime: document.getElementById('f-start').value,
+    durationMinutes: parseInt(document.getElementById('f-duration').value) || 0,
+    status: document.getElementById('f-status').value,
+  };
+  if (editingId) {
+    const t = tasks.find(t => t.id === editingId);
+    if (t) { Object.assign(t, data); t.alertsShown = { 15: false, 5: false, 0: false }; }
+    toast('Tarea actualizada');
+  } else {
+    tasks.push(norm({ ...data, id: uid() }));
+    toast('Tarea creada');
   }
+  saveTasks(); closeModal('task-modal'); renderTasks();
+}
+function updateDurHint() {
+  const m = parseInt(document.getElementById('f-duration').value) || 0;
+  const el = document.getElementById('f-dur-hint');
+  el.textContent = m >= 60 ? `${Math.floor(m/60)}h${m%60 ? ' '+(m%60)+'m' : ''}` : '';
 }
 
-/* ═══ Utils seguridad HTML ═══ */
-function escapeHTML(s) {
-  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+// ══ IMPORT ══
+function openImportModal() { openModal('import-modal'); }
+function switchTab(i) {
+  document.querySelectorAll('.itab').forEach((t, j) => t.classList.toggle('active', i===j));
+  document.querySelectorAll('.ipanel').forEach((p, j) => p.classList.toggle('active', i===j));
 }
-function escapeAttr(s) {
-  return escapeHTML(s).replace(/\n/g, '&#10;');
+function setupDropZone() {
+  const z = document.getElementById('drop-zone');
+  z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('drag-over'); });
+  z.addEventListener('dragleave', () => z.classList.remove('drag-over'));
+  z.addEventListener('drop', e => { e.preventDefault(); z.classList.remove('drag-over'); const f = e.dataTransfer.files[0]; if (f) processFile(f); });
 }
-
-/* ═══ CARGA DE DATOS ═══ */
-const STORAGE_KEY   = 'limaretail_panel_csv_v1';
-const STORAGE_NAME  = 'limaretail_panel_csv_name_v1';
-const STORAGE_TIME  = 'limaretail_panel_csv_time_v1';
-
-function saveToStorage(text, sourceName) {
+function handleFile(inp) { if (inp.files[0]) processFile(inp.files[0]); }
+function processFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (ext === 'csv') {
+    const r = new FileReader(); r.onload = e => applyImport(parseCSV(e.target.result)); r.readAsText(file, 'UTF-8');
+  } else if (['xlsx','xls'].includes(ext)) {
+    const r = new FileReader(); r.onload = e => applyImport(parseXLSX(e.target.result)); r.readAsArrayBuffer(file);
+  } else { alert('Formato no soportado. Usa CSV, XLSX o XLS.'); }
+}
+function parseCSV(text) {
+  const res = Papa.parse(text, { header:true, skipEmptyLines:true, transformHeader: h => h.trim().toLowerCase() });
+  return mapRows(res.data);
+}
+function parseXLSX(buf) {
+  const wb = XLSX.read(buf, { type:'array' });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, { raw:false });
+  return mapRows(rows.map(row => { const o={}; Object.keys(row).forEach(k=>{o[k.trim().toLowerCase()]=row[k];}); return o; }));
+}
+function mapRows(rows) {
+  const g = (row, ...keys) => { for (const k of keys) { const v=row[k]; if (v !== undefined && v !== '') return v; } return ''; };
+  return rows.map(row => {
+    const name = g(row, 'nombre','name','tarea','task','titulo','title');
+    if (!name) return null;
+    const startRaw = g(row, 'inicio','fecha_inicio','fecha inicio','start','fecha','datetime');
+    let startDateTime = '';
+    if (startRaw) { const d = new Date(startRaw); if (!isNaN(d.getTime())) startDateTime = dtLocal(d); }
+    const stRaw = (g(row,'estado','status','estatus') + '').toLowerCase();
+    let status = 'pendiente';
+    if (/proces|progress|activ/.test(stRaw)) status = 'en_proceso';
+    else if (/complet|done|finish|termin/.test(stRaw)) status = 'completada';
+    return norm({
+      name: String(name),
+      description: String(g(row,'descripcion','descripción','description','desc','detalle','comentario') || ''),
+      startDateTime,
+      durationMinutes: parseInt(g(row,'duracion','duración','duration','minutos','minutes','mins','min')) || 60,
+      status,
+    });
+  }).filter(Boolean);
+}
+function importCSVText() {
+  const txt = document.getElementById('csv-txt').value.trim();
+  if (!txt) { toast('Pega tu CSV primero'); return; }
+  applyImport(parseCSV(txt));
+}
+async function importSheets() {
+  let url = document.getElementById('sheets-url').value.trim();
+  if (!url) { toast('Ingresa la URL primero'); return; }
+  url = url.replace(/\/edit[^?]*(\?.*)?$/, '/export?format=csv')
+           .replace(/\/pub[^?]*(\?.*)?$/, '/export?format=csv');
+  if (!url.includes('format=csv')) url += (url.includes('?') ? '&' : '?') + 'format=csv';
   try {
-    localStorage.setItem(STORAGE_KEY,  text);
-    localStorage.setItem(STORAGE_NAME, sourceName || 'CSV');
-    localStorage.setItem(STORAGE_TIME, String(Date.now()));
-  } catch (e) { /* cuota llena — ignorar */ }
-}
-function clearStorage() {
-  localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem(STORAGE_NAME);
-  localStorage.removeItem(STORAGE_TIME);
-}
-function fmtSavedTime() {
-  const t = parseInt(localStorage.getItem(STORAGE_TIME));
-  if (!t) return '';
-  const d = new Date(t);
-  return ' · guardado ' + String(d.getDate()).padStart(2,'0') + '/' +
-    String(d.getMonth()+1).padStart(2,'0') + ' ' +
-    String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-}
-
-function loadCSVText(text, sourceName, persist) {
-  const raw = parseCSV(text);
-  const rows = normalize(raw);
-  const phases = groupByPhase(rows);
-
-  // Rango fechas (de tareas con ini y fin)
-  const dates = rows.flatMap(r => [r.ini, r.fin]).filter(Boolean);
-  const minDate = dates.length ? new Date(Math.min(...dates.map(d=>d.getTime()))) : null;
-  const maxDate = dates.length ? new Date(Math.max(...dates.map(d=>d.getTime()))) : null;
-
-  // Construimos filtro de responsables (sidebar + KPI select)
-  const resps = [...new Set(rows.map(r=>r.resp).filter(Boolean))].sort();
-  const respOpts = '<option value="">Todos</option>' +
-    resps.map(r => '<option value="' + escapeAttr(r) + '">' + escapeHTML(r) + '</option>').join('');
-  const sel = document.getElementById('fResp');
-  sel.innerHTML = respOpts;
-  sel.value = FILTERS.resp || '';
-  const kSel = document.getElementById('kRespSelect');
-  kSel.innerHTML = respOpts;
-  kSel.value = FILTERS.resp || '';
-
-  DATA = { rows, phases, minDate, maxDate };
-  if (persist !== false) saveToStorage(text, sourceName);
-  document.getElementById('fileStatus').textContent = (sourceName || 'CSV cargado') + fmtSavedTime();
-  renderAll();
-}
-
-function loadFromStorage() {
-  const text = localStorage.getItem(STORAGE_KEY);
-  if (!text) return false;
-  try {
-    loadCSVText(text, localStorage.getItem(STORAGE_NAME) || 'CSV guardado', false);
-    return true;
-  } catch (e) {
-    return false;
+    toast('Importando…');
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    applyImport(parseCSV(await res.text()));
+  } catch(e) {
+    alert(`No se pudo importar: ${e.message}\n\nAsegúrate de que la hoja esté publicada públicamente como CSV.`);
   }
 }
-
-function loadDefault() {
-  fetch('pendientes.csv')
-    .then(r => r.ok ? r.text() : Promise.reject())
-    .then(t => loadCSVText(t, 'pendientes.csv'))
-    .catch(() => {
-      if (loadFromStorage()) return;
-      document.getElementById('fileStatus').textContent = 'Arrastra tu CSV aquí';
-      document.getElementById('ganttContainer').innerHTML =
-        '<div class="empty"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg><div>Carga un CSV para comenzar</div></div>';
-    });
+function applyImport(rows) {
+  if (!rows || rows.length === 0) { toast('No se encontraron tareas válidas'); return; }
+  const replace = document.getElementById('imp-replace').checked;
+  tasks = replace ? rows : [...tasks, ...rows];
+  saveTasks(); closeModal('import-modal'); renderTasks();
+  toast(`✓ ${rows.length} tarea${rows.length !== 1 ? 's' : ''} importada${rows.length !== 1 ? 's' : ''}`);
 }
 
-/* ═══ EVENTOS ═══ */
-document.getElementById('fileInput').addEventListener('change', e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const rd = new FileReader();
-  rd.onload = ev => loadCSVText(ev.target.result, f.name);
-  rd.readAsText(f, 'UTF-8');
-});
-const dz = document.getElementById('dropZone');
-['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => {
-  e.preventDefault(); dz.classList.add('drag');
-}));
-['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => {
-  e.preventDefault(); dz.classList.remove('drag');
-}));
-dz.addEventListener('drop', e => {
-  const f = e.dataTransfer.files[0];
-  if (!f) return;
-  const rd = new FileReader();
-  rd.onload = ev => loadCSVText(ev.target.result, f.name);
-  rd.readAsText(f, 'UTF-8');
-});
+// ══ SHARE ══
+function openShareModal() {
+  const base = window.location.href.split('?')[0];
+  document.getElementById('share-url').value = `${base}?d=${encode(tasks)}`;
+  document.getElementById('copy-msg').textContent = '';
+  openModal('share-modal');
+}
+function copyURL() {
+  const inp = document.getElementById('share-url');
+  navigator.clipboard.writeText(inp.value).then(() => {
+    document.getElementById('copy-msg').textContent = '✓ URL copiada al portapapeles';
+    setTimeout(() => { document.getElementById('copy-msg').textContent = ''; }, 3000);
+  }).catch(() => { inp.select(); document.execCommand('copy'); });
+}
 
-document.getElementById('fResp').addEventListener('change', e => {
-  FILTERS.resp = e.target.value;
-  document.getElementById('kRespSelect').value = FILTERS.resp;
-  renderAll();
-});
-document.getElementById('fUrg').addEventListener('change',  e => {
-  FILTERS.urg = e.target.value;
-  renderAll();
-});
-
-// Tarjetas KPI clickeables (Críticas / Alta prioridad): toggle de filtro de urgencia
-document.querySelectorAll('.kpi-card.filterable').forEach(card => {
-  card.addEventListener('click', () => {
-    const urg = card.dataset.filterUrg;
-    FILTERS.urg = (FILTERS.urg === urg) ? '' : urg;
-    document.getElementById('fUrg').value = FILTERS.urg;
-    renderAll();
-  });
-});
-
-// Selector de responsable en tarjeta KPI
-document.getElementById('kRespSelect').addEventListener('change', e => {
-  e.stopPropagation();
-  FILTERS.resp = e.target.value;
-  document.getElementById('fResp').value = FILTERS.resp;
-  renderAll();
-});
-document.getElementById('kRespSelect').addEventListener('click', e => e.stopPropagation());
-document.querySelectorAll('.sf-preset[data-lvl]').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('.sf-preset[data-lvl]').forEach(x => x.classList.remove('on'));
-    b.classList.add('on');
-    FILTERS.lvl = b.dataset.lvl;
-    renderAll();
-  });
-});
-document.getElementById('btnReload').addEventListener('click', loadDefault);
-document.getElementById('btnExport').addEventListener('click', () => window.print());
-
-/* Today string */
-const hoy = new Date();
-document.getElementById('todayStr').textContent =
-  'Hoy · ' + String(hoy.getDate()).padStart(2,'0') + '/' + String(hoy.getMonth()+1).padStart(2,'0') + '/' + hoy.getFullYear();
-
-/* ═══ Boot ═══
-   Prioridad: 1) CSV guardado del usuario  2) pendientes.csv de la carpeta  3) vacío */
-if (!loadFromStorage()) loadDefault();
+// ══ UTILS ══
+function dtLocal(d) {
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2600);
+}
 </script>
 </body>
 </html>
