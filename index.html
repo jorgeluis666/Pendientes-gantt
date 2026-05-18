@@ -178,6 +178,17 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdr
 .alert-item-msg.t15{color:var(--warning)}.alert-item-msg.t5{color:#ff7b2e}.alert-item-msg.t0{color:var(--danger)}
 .alert-ftr{padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:center}
 
+/* ─── SHEETS CONNECTION ─── */
+.sheets-hdr-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--success);background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.2);border-radius:20px;padding:4px 10px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.sheets-hdr-badge:hover{background:rgba(22,163,74,.15)}
+.sheets-hdr-dot{width:6px;height:6px;border-radius:50%;background:var(--success);flex-shrink:0}
+.sheets-hdr-sync{background:transparent;border:none;cursor:pointer;color:var(--success);font-size:13px;padding:0 0 0 2px;line-height:1;transition:transform .3s}
+.sheets-hdr-sync:hover{transform:rotate(180deg)}
+.sheets-status-box{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+.sheets-status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0;box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+.sheets-status-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.sheets-status-id{font-size:11px;color:var(--text2);font-family:monospace;word-break:break-all;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sheets-sync-info{font-size:11px;color:var(--text2);text-align:center;padding:4px 0}
 /* ─── TOAST ─── */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:#fff;border:1px solid transparent;padding:8px 18px;border-radius:30px;font-size:12px;z-index:1000;transition:transform .25s ease;white-space:nowrap;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.15)}
 .toast.show{transform:translateX(-50%) translateY(0)}
@@ -199,6 +210,11 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdr
     <span class="brand-badge" id="task-count-badge">0 tareas</span>
   </div>
   <div class="hdr-actions">
+    <div id="sheets-header-badge" class="sheets-hdr-badge" style="display:none" onclick="openImportModal();switchTab(1)">
+      <span class="sheets-hdr-dot"></span>
+      <span id="sheets-hdr-label">Sheets</span>
+      <button class="sheets-hdr-sync" title="Sincronizar" onclick="event.stopPropagation();syncFromSheet()">↺</button>
+    </div>
     <button class="btn btn-secondary" onclick="openImportModal()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Importar
@@ -297,17 +313,39 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdr
         </div>
       </div>
       <div class="ipanel" id="ip-1">
-        <div class="fg">
-          <label class="flbl">URL del Google Sheets</label>
-          <input type="url" id="sheets-url" class="finp" placeholder="https://docs.google.com/spreadsheets/d/…">
+        <!-- Sin conexión -->
+        <div id="sheets-connect-form">
+          <div class="fg">
+            <label class="flbl">ID o URL de Google Sheets</label>
+            <input type="text" id="sheets-id-inp" class="finp" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74… o URL completa" autocomplete="off">
+          </div>
+          <div class="ibox">
+            <strong>Cómo obtener el ID:</strong><br>
+            Copia la URL de tu hoja — la parte entre <code>/d/</code> y <code>/edit</code> es el ID.<br><br>
+            <strong>Requisito:</strong> la hoja debe estar compartida como <strong>"Cualquiera con el enlace puede ver"</strong>.
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="connectSheet()">
+            Conectar y sincronizar
+          </button>
         </div>
-        <div class="ibox">
-          <strong>Pasos:</strong><br>
-          1. <strong>Archivo → Compartir → Publicar en la web</strong><br>
-          2. Elige <strong>CSV</strong> y copia el enlace<br><br>
-          <code>…/export?format=csv&amp;gid=0</code>
+        <!-- Conectado -->
+        <div id="sheets-connected-panel" style="display:none">
+          <div class="sheets-status-box">
+            <span class="sheets-status-dot"></span>
+            <div style="min-width:0">
+              <div class="sheets-status-title">Hoja conectada</div>
+              <div class="sheets-status-id" id="sheets-status-id"></div>
+            </div>
+          </div>
+          <div class="sheets-sync-info" id="sheets-sync-info"></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn btn-primary" style="flex:1" onclick="syncFromSheet()">↺ Sincronizar ahora</button>
+            <button class="btn btn-ghost" onclick="disconnectSheet()">Desconectar</button>
+          </div>
+          <div class="ibox" style="margin-top:12px">
+            La sincronización reemplaza la lista actual con los datos de la hoja.
+          </div>
         </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="importSheets()">Importar desde Sheets</button>
       </div>
       <div class="ipanel" id="ip-2">
         <div class="fg">
@@ -374,13 +412,19 @@ let activeFilter = null;
 let activeSort = 'time';
 let notifOK = false;
 const SK = 'lr_checklist_v3';
+const SK_SHEET_ID  = 'lr_sheet_id';
+const SK_SHEET_TS  = 'lr_sheet_sync';
+let connectedSheetId = '';
+let lastSyncTime = null;
 
 // ══ INIT ══
 document.addEventListener('DOMContentLoaded', () => {
   loadTasks();
   checkURLImport();
+  initSheetConnection();
   askNotifPermission();
   setupDropZone();
+  setInterval(refreshSyncLabel, 60000);
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') ['import-modal','share-modal','alert-modal'].forEach(closeModal);
     if (e.key === 'n' && !e.ctrlKey && !e.metaKey && !e.altKey &&
@@ -729,6 +773,95 @@ function applyImport(rows) {
   tasks = document.getElementById('imp-replace').checked ? rows : [...tasks,...rows];
   saveTasks(); closeModal('import-modal'); renderTasks();
   toast(`✓ ${rows.length} tarea${rows.length!==1?'s':''} importada${rows.length!==1?'s':''}`);
+}
+
+// ══ GOOGLE SHEETS CONNECTION ══
+function initSheetConnection() {
+  connectedSheetId = localStorage.getItem(SK_SHEET_ID) || '';
+  lastSyncTime = localStorage.getItem(SK_SHEET_TS) || null;
+  updateSheetUI();
+}
+
+function extractSheetId(input) {
+  const m = input.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if (m) return m[1];
+  if (/^[a-zA-Z0-9-_]{20,}$/.test(input.trim())) return input.trim();
+  return null;
+}
+
+async function connectSheet() {
+  const inp = document.getElementById('sheets-id-inp').value.trim();
+  if (!inp) { toast('Ingresa el ID o URL de la hoja'); return; }
+  const id = extractSheetId(inp);
+  if (!id) { toast('No se reconoce ese ID o URL'); return; }
+  connectedSheetId = id;
+  await syncFromSheet(true);
+}
+
+async function syncFromSheet(isFirstConnect = false) {
+  if (!connectedSheetId) return;
+  const url = `https://docs.google.com/spreadsheets/d/${connectedSheetId}/export?format=csv&gid=0`;
+  const syncBtn = document.querySelector('#sheets-connected-panel .btn-primary');
+  if (syncBtn) syncBtn.textContent = '…';
+  try {
+    toast('Sincronizando con Sheets…');
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} — verifica que la hoja sea pública`);
+    const rows = parseCSV(await res.text());
+    if (!rows || rows.length === 0) throw new Error('No se encontraron tareas en la hoja');
+    tasks = rows;
+    saveTasks();
+    lastSyncTime = new Date().toISOString();
+    localStorage.setItem(SK_SHEET_ID, connectedSheetId);
+    localStorage.setItem(SK_SHEET_TS, lastSyncTime);
+    updateSheetUI();
+    renderTasks();
+    toast(`✓ ${rows.length} tareas sincronizadas`);
+    if (isFirstConnect) closeModal('import-modal');
+  } catch(e) {
+    connectedSheetId = isFirstConnect ? '' : connectedSheetId;
+    if (isFirstConnect) { localStorage.removeItem(SK_SHEET_ID); localStorage.removeItem(SK_SHEET_TS); }
+    updateSheetUI();
+    alert(`No se pudo conectar:\n\n${e.message}\n\nAsegúrate de que la hoja esté compartida como "Cualquiera con el enlace puede ver".`);
+  } finally {
+    if (syncBtn) syncBtn.textContent = '↺ Sincronizar ahora';
+  }
+}
+
+function disconnectSheet() {
+  if (!confirm('¿Desconectar esta hoja? La lista actual no se modificará.')) return;
+  connectedSheetId = ''; lastSyncTime = null;
+  localStorage.removeItem(SK_SHEET_ID); localStorage.removeItem(SK_SHEET_TS);
+  updateSheetUI();
+  toast('Hoja desconectada');
+}
+
+function updateSheetUI() {
+  const connected = !!connectedSheetId;
+  // Header badge
+  const badge = document.getElementById('sheets-header-badge');
+  if (badge) badge.style.display = connected ? 'flex' : 'none';
+  if (connected) {
+    const lbl = document.getElementById('sheets-hdr-label');
+    if (lbl) lbl.textContent = 'Sheets';
+  }
+  // Modal panels
+  const form  = document.getElementById('sheets-connect-form');
+  const panel = document.getElementById('sheets-connected-panel');
+  if (form)  form.style.display  = connected ? 'none'  : 'block';
+  if (panel) panel.style.display = connected ? 'block' : 'none';
+  if (connected) {
+    const idEl = document.getElementById('sheets-status-id');
+    if (idEl) idEl.textContent = connectedSheetId;
+    refreshSyncLabel();
+  }
+}
+
+function refreshSyncLabel() {
+  const el = document.getElementById('sheets-sync-info');
+  if (!el || !lastSyncTime) return;
+  const mins = Math.round((Date.now() - new Date(lastSyncTime)) / 60000);
+  el.textContent = mins < 1 ? 'Sincronizado ahora mismo' : `Última sincronización hace ${mins} min`;
 }
 
 // ══ SHARE ══
