@@ -113,9 +113,11 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdr
 .dur-unit{font-size:13px;color:var(--text2);white-space:nowrap;font-weight:500}
 
 /* ─── VENCE / FIN ─── */
-.td-end{width:145px;padding:10px 12px;text-align:right}
-.cell-end{font-size:14px;font-weight:600;color:var(--text2);white-space:nowrap;display:block}
-.cell-end.soon{color:var(--warning)}.cell-end.crit{color:#d97706}.cell-end.over{color:var(--danger)}.cell-end.empty{color:var(--text3);font-weight:400}
+.td-end{width:158px;padding:10px 12px;text-align:right}
+.cell-end{font-size:14px;font-weight:600;color:var(--text);padding:4px 6px;text-align:right;cursor:pointer}
+.cell-end::-webkit-calendar-picker-indicator{filter:none;cursor:pointer;opacity:.35}
+.cell-end:hover::-webkit-calendar-picker-indicator{opacity:.7}
+.cell-end.soon{color:var(--warning)!important}.cell-end.crit{color:#d97706!important}.cell-end.over{color:var(--danger)!important}.cell-end.empty{color:var(--text3);font-weight:400}
 
 /* ─── TIME REMAINING ─── */
 .time-rem{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.01em}
@@ -558,9 +560,9 @@ function updateTimeCells() {
       barEl.className = `prog-bar ${tc}`;
     }
     const endEl = document.getElementById(`end-${task.id}`);
-    if (endEl) {
-      endEl.textContent = fmtEndTime(task);
-      endEl.className = `cell-end ${endClass(task)}`;
+    if (endEl && document.activeElement !== endEl) {
+      endEl.value = endDateTimeLocal(task);
+      endEl.className = `cell-dt cell-end ${endClass(task)}`;
     }
   });
 }
@@ -633,7 +635,9 @@ function renderRow(task) {
              onchange="saveFieldDirect('${task.id}','startDateTime',this.value)">
     </td>
     <td class="td-end">
-      <span id="end-${task.id}" class="cell-end ${endClass(task)}">${fmtEndTime(task)}</span>
+      <input id="end-${task.id}" class="cell-dt cell-end ${endClass(task)}" type="datetime-local"
+             value="${endDateTimeLocal(task)}"
+             onchange="saveVence('${task.id}',this.value)">
     </td>
     <td class="td-dur">
       <div class="dur-wrap">
@@ -928,6 +932,24 @@ function copyURL() {
 }
 
 // ══ UTILS ══
+function endDateTimeLocal(task) {
+  if (!task.startDateTime || !task.durationMinutes) return '';
+  const end = new Date(new Date(task.startDateTime).getTime() + task.durationMinutes * 60000);
+  return dtLocal(end);
+}
+function saveVence(id, value) {
+  const task = tasks.find(t => t.id === id);
+  if (!task || !value) return;
+  if (task.startDateTime) {
+    const dur = Math.round((new Date(value).getTime() - new Date(task.startDateTime).getTime()) / 60000);
+    if (dur > 0) {
+      task.durationMinutes = dur;
+      const durEl = document.getElementById(`dur-${id}`);
+      if (durEl) durEl.value = dur;
+    }
+  }
+  saveTasks();
+}
 function fmtEndTime(task) {
   if (!task.startDateTime || !task.durationMinutes) return '—';
   const end = new Date(new Date(task.startDateTime).getTime() + task.durationMinutes * 60000);
